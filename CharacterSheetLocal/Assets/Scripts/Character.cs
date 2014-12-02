@@ -49,13 +49,15 @@ public class Character {
     [XmlAttribute]
     public string Charisma = "0";
     [XmlAttribute]
-    public string CurrentHP;
+    public string CurrentHP = "0";
     [XmlAttribute]
-    public string MaxHP;
+    public string MaxHP = "0";
     [XmlAttribute]
     public string AC = "10";
     [XmlAttribute]
     public string ACMiscBonus = "0";
+    [XmlAttribute]
+    public string ShieldBonus = "0";
     [XmlAttribute]
     public string DR = "0";
     [XmlAttribute]
@@ -66,6 +68,12 @@ public class Character {
     public string BaseReflex = "0";
     [XmlAttribute]
     public string BaseWill = "0";
+    [XmlAttribute]
+    public string BonusFortitude = "0";
+    [XmlAttribute]
+    public string BonusReflex = "0";
+    [XmlAttribute]
+    public string BonusWill = "0";
     [XmlAttribute]
     public string GrappleBonus = "0";
 

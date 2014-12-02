@@ -3,7 +3,7 @@ using System.Collections;
 
 public class MenuGUI : MonoBehaviour {
 
-    private string characterName = "";
+    private string characterName = "Test";
 	
 	void Start () {
 	
