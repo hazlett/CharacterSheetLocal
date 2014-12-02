@@ -3,19 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 public class SheetGUI : MonoBehaviour {
-
-    private string name = "name", owner = "owner", race = "race", gender = "gender",
-        age = "age", eye = "eye", hair = "hair", scars = "scars", height = "height", 
-        weight = "weight", speed = "speed";
-    private List<string> feats, languages, inventory;
-    private List<Class> classes;
-    private List<Skill> skills;
-    private List<int> levels;
-    private string totalLevel = "0", experience = "0000", money = "0000",
-        strength = "", dexterity = "", constitution = "", intelligence = "", wisdom = "", charisma = "",
-        ac = "", hp = "", dr = "",
-        fortitude = "", reflex = "", will = "", baseFortitude = "", baseReflex = "", baseWill = "",
-        baseAttackBonus = "", initiative = "";
+    //serialize. could all be in Character
+    //private string name = "name", owner = "owner", race = "race", gender = "gender",
+    //    age = "age", eye = "eye", hair = "hair", scars = "scars", height = "height", 
+    //    weight = "weight", speed = "speed";
+    //private List<string> languages;
+    //private List<Feat> feats;
+    //private List<Item> inventory;
+    //private List<Class> classes;
+    //private List<Skill> skills;
+    //private string experience = "0000", money = "0000",
+    //    strength = "", dexterity = "", constitution = "", intelligence = "", wisdom = "", charisma = "",
+    //    ac = "", hp = "", dr = "", baseFortitude = "", baseReflex = "", baseWill = "", initiativeBonus = "";
+    //dont serialize. private and/or calculated on fly
+    private Character character = new Character();
+    private string loadName = "";
+    private string totalLevel = "0", fortitude = "0", reflex = "0", will = "0", totalInitiative = "0", baseAttackBonus = "0";
+    private int strMod, dexMod, conMod, intMod, wisMod, chaMod;
+    private string strTemp = "0", dexTemp = "0", conTemp = "0", intTemp = "0", wisTemp = "0", chaTemp = "0";
+    private int strTempMod, dexTempMod, conTempMod, intTempMod, wisTempMod, chaTempMod;
 
     //GUI stuff
     private Vector2 detailsScroll = new Vector2();
@@ -25,15 +31,7 @@ public class SheetGUI : MonoBehaviour {
     private Vector2 statsScroll = new Vector2();
     private Rect statsRect = new Rect(0, Screen.height * 0.125f, Screen.width * 0.25f, Screen.height * 0.25f);
 	void Start () {
-        classes = new List<Class>();
-        levels = new List<int>();
-        feats = new List<string>();
-        skills = new List<Skill>();
-        languages = new List<string>();
-        inventory = new List<string>();
-        Skills.Instance.LoadBaseSkills();
-        Skills.Instance.Initialize();
-        skills = Skills.Instance.SkillsList;
+
 
 	}
 
@@ -42,7 +40,21 @@ public class SheetGUI : MonoBehaviour {
         {
             Skills.Instance.LoadBaseSkills();
         }
+        CalculateModifiers();
+        CalculateSaves();
 	}
+    private void CalculateModifiers()
+    {
+
+    }
+    private void CalculateSaves()
+    {
+        //fortitude = baseFortitude + conMod;
+        //reflex = baseReflex + dexMod;
+        //will = baseWill + wisMod;
+    }
+
+
 
     void OnGUI()
     {
@@ -59,27 +71,27 @@ public class SheetGUI : MonoBehaviour {
         GUILayout.BeginVertical();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Strength");
-        strength = GUILayout.TextField(strength);
+        character.Strength = GUILayout.TextField(character.Strength);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Dexterity");
-        dexterity = GUILayout.TextField(dexterity);
+        character.Dexterity = GUILayout.TextField(character.Dexterity);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Constitution");
-        constitution = GUILayout.TextField(constitution);
+        character.Constitution = GUILayout.TextField(character.Constitution);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Intelligence");
-        intelligence = GUILayout.TextField(intelligence);
+        character.Intelligence = GUILayout.TextField(character.Intelligence);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Wisdom");
-        wisdom = GUILayout.TextField(wisdom);
+        character.Wisdom = GUILayout.TextField(character.Wisdom);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Charisma");
-        charisma = GUILayout.TextField(charisma);
+        character.Charisma = GUILayout.TextField(character.Charisma);
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
         GUILayout.EndScrollView();
@@ -89,28 +101,36 @@ public class SheetGUI : MonoBehaviour {
     {
         GUILayout.BeginArea(detailsRect);
         detailsScroll = GUILayout.BeginScrollView(detailsScroll);
-        if (GUILayout.Button("SAVE CHARACTER"))
-        {
-            //Saves character
-        }
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Name:"); name = GUILayout.TextField(name);
-        GUILayout.Label("Owner:"); owner = GUILayout.TextField(owner);
-        GUILayout.Label("Race:"); race = GUILayout.TextField(race);
-        //GUILayout.EndHorizontal();
-        //GUILayout.BeginHorizontal();
-        GUILayout.Label("Gender:"); gender = GUILayout.TextField(gender);
-        GUILayout.Label("Age:"); age = GUILayout.TextField(age);
-        GUILayout.Label("Eye:"); eye = GUILayout.TextField(eye);
-        GUILayout.Label("Hair:"); hair = GUILayout.TextField(hair);
-        //GUILayout.EndHorizontal();
-        //GUILayout.BeginHorizontal();
-        GUILayout.Label("Scars/Tats:"); scars = GUILayout.TextField(scars);
-        GUILayout.Label("Height:"); height = GUILayout.TextField(height);
-        GUILayout.Label("Weight:"); weight = GUILayout.TextField(weight);
-        GUILayout.Label("Speed:"); speed = GUILayout.TextField(speed);
-        GUILayout.Label("Exp:"); experience = GUILayout.TextField(experience);
-        GUILayout.Label("Money:"); money = GUILayout.TextField(money);
+        if (GUILayout.Button("SAVE CHARACTER"))
+        {         
+            character.Save();
+        }
+        GUILayout.Label("LOAD NAME: ");
+        loadName = GUILayout.TextField(loadName);
+        if (GUILayout.Button("LOAD CHARACTER"))
+        {
+            
+        }
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Name:"); character.Name = GUILayout.TextField(character.Name);
+        //GUILayout.Label("Owner:"); owner = GUILayout.TextField(owner);
+        //GUILayout.Label("Race:"); race = GUILayout.TextField(race);
+        ////GUILayout.EndHorizontal();
+        ////GUILayout.BeginHorizontal();
+        //GUILayout.Label("Gender:"); gender = GUILayout.TextField(gender);
+        //GUILayout.Label("Age:"); age = GUILayout.TextField(age);
+        //GUILayout.Label("Eye:"); eye = GUILayout.TextField(eye);
+        //GUILayout.Label("Hair:"); hair = GUILayout.TextField(hair);
+        ////GUILayout.EndHorizontal();
+        ////GUILayout.BeginHorizontal();
+        //GUILayout.Label("Scars/Tats:"); scars = GUILayout.TextField(scars);
+        //GUILayout.Label("Height:"); height = GUILayout.TextField(height);
+        //GUILayout.Label("Weight:"); weight = GUILayout.TextField(weight);
+        //GUILayout.Label("Speed:"); speed = GUILayout.TextField(speed);
+        //GUILayout.Label("Exp:"); experience = GUILayout.TextField(experience);
+        //GUILayout.Label("Money:"); money = GUILayout.TextField(money);
         GUILayout.EndHorizontal();
 
         GUILayout.EndScrollView();
@@ -121,15 +141,15 @@ public class SheetGUI : MonoBehaviour {
         GUILayout.BeginArea(skillsRect);
         if (GUILayout.Button("ADD SKILL"))
         {
-            skills.Add(new Skill());
+            character.Skills.Add(new Skill());
         }
-        if (GUILayout.Button("SAVE SKILLS"))
-        {
-            Skills.Instance.SkillsList = skills;
-            Skills.Instance.SaveBaseSkills();
-        }     
+        //if (GUILayout.Button("SAVE SKILLS"))
+        //{
+        //    Skills.Instance.SkillsList = skills;
+        //    Skills.Instance.SaveBaseSkills();
+        //}     
         skillsScroll = GUILayout.BeginScrollView(skillsScroll);
-        foreach (Skill skill in skills)
+        foreach (Skill skill in character.Skills)
         {
             GUILayout.BeginHorizontal();
             skill.Name = GUILayout.TextField(skill.Name);
@@ -164,9 +184,9 @@ public class SheetGUI : MonoBehaviour {
     private void Save()
     {
         totalLevel = "0";
-        foreach(int level in levels)
+        foreach(Class c in character.Classes)
         {
-            totalLevel += level;
+            totalLevel += c.Level;
         }
     }
 }

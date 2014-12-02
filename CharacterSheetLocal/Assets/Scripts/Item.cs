@@ -2,11 +2,12 @@
 using System.Collections;
 using System.Xml.Serialization;
 
-public class Class {
-    [XmlAttribute]
-    public string Name = "class";
-    [XmlAttribute]
-    public string Level = "0";
-    public Class() { }
+public class Item {
 
+    [XmlAttribute]
+    public string Name = "item";
+    [XmlAttribute]
+    public string Description = "item";
+
+    public Item() { }
 }
