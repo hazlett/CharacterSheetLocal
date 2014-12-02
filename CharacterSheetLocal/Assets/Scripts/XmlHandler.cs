@@ -28,6 +28,7 @@ public class XmlHandler {
             {
                 obj = serializer.Deserialize(stream) as object;
             }
+            Debug.Log("XML Loaded");
         }
         else
         {

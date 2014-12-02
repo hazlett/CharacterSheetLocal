@@ -94,10 +94,11 @@ public class Character {
     {
         Debug.Log("Saving character");
         XmlSerializer xmls = new XmlSerializer(typeof(Character));
-        using (FileStream stream = new FileStream(Name + ".xml", FileMode.Create))
+        using (FileStream stream = new FileStream("Characters//" + Name + ".xml", FileMode.Create))
         {
             xmls.Serialize(stream, this);
         }
+        Debug.Log("Character saved");
     }
 
 

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="Windows-1252"?>
-<Character xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="C1" Owner="owner" Race="race" Gender="gender" Age="age" Alignment="true neutral" Eye="eye" Hair="hair" Scars="scars" Height="height" Weight="weight" Speed="speed" Experience="0" Money="0" Strength="0" Dexterity="0" Constitution="0" Intelligence="0" Wisdom="0" Charisma="0" AC="10" DR="0" InitiativeBonus="0" BaseFortitude="0" BaseReflex="0" BaseWill="0" GrappleBonus="0">
-  <Skills Name="1" Stat="STR" Ranks="0" Bonus="0" IsClassSkill="false" />
-  <Skills Name="2" Stat="STR" Ranks="4" Bonus="0" IsClassSkill="false" />
-  <Notes />
-</Character>

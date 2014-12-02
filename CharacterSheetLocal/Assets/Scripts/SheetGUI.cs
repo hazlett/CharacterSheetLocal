@@ -30,7 +30,7 @@ public class SheetGUI : MonoBehaviour {
     private Vector2 statsScroll = new Vector2();
     private Rect statsRect = new Rect(0, Screen.height * 0.125f, Screen.width * 0.25f, Screen.height * 0.25f);
 	void Start () {
-        character = (Character)XmlHandler.Instance.Load(Global.Instance.CharacterName + ".xml", typeof(Character));
+        character = (Character)XmlHandler.Instance.Load("Characters//" + Global.Instance.CharacterName + ".xml", typeof(Character));
         if (character == null)
         {
             character = new Character();
