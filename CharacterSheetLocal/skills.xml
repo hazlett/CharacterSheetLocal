@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <Skills xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <BaseSkills Stat="STR" />
-  <BaseSkills Stat="STR" />
-  <BaseSkills Stat="STR" />
-  <BaseSkills Stat="STR" />
-  <BaseSkills Stat="STR" />
-  <BaseSkills Stat="STR" />
-  <BaseSkills Stat="STR" />
-  <BaseSkills Stat="STR" />
-  <BaseSkills Stat="STR" />
-  <BaseSkills Stat="STR" />
+  <SkillsList Name="Appraise" Stat="WIS" Ranks="0" Bonus="0" IsClassSkill="false" />
+  <SkillsList Name="Balance*" Stat="DEX" Ranks="0" Bonus="0" IsClassSkill="false" />
+  <SkillsList Name="Bluff" Stat="CHA" Ranks="0" Bonus="0" IsClassSkill="false" />
+  <SkillsList Name="Climb" Stat="STR" Ranks="0" Bonus="0" IsClassSkill="false" />
+  <SkillsList Name="Computer Use" Stat="INT" Ranks="0" Bonus="0" IsClassSkill="false" />
 </Skills>

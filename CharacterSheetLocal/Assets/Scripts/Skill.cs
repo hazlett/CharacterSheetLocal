@@ -4,42 +4,43 @@ using System.Xml.Serialization;
 
 public class Skill {
 
-    private string name;
-    private int ranks, bonus;
-    private bool classSkill;
-    private Stats stat;
+    
     [XmlAttribute]
     public string Name { get; set; }
-    [XmlIgnore]
-    public int Ranks { get; set; }
-    [XmlIgnore]
-    public int Bonus { get; set; }
     [XmlAttribute]
     public Stats Stat { get; set; }
-    [XmlIgnore]
+    [XmlAttribute]
+    public int Ranks { get; set; }
+    [XmlAttribute]
+    public int Bonus { get; set; }
+    [XmlAttribute]
     public bool IsClassSkill { get; set; }
     public Skill()
     {
-
+        Name = "";
+        //Stat = Stats.STR;
+        //Ranks = 0;
+        //Bonus = 0;
+        //IsClassSkill = false;
     }
     public Skill(string name, Stats stat, int ranks = 0, int bonus = 0, bool classSkill = false)
     {
-        this.name = name;
-        this.ranks = ranks;
-        this.stat = stat;
-        this.bonus = bonus;
-        this.classSkill = classSkill;
+        Name = name;
+        Ranks = ranks;
+        Stat = stat;
+        Bonus = bonus;
+        IsClassSkill = classSkill;
     }
     public void SetRanks(int ranks)
     {
-        this.ranks = ranks;
+        Ranks = ranks;
     }
     public void SetBonus(int bonus)
     {
-        this.bonus = bonus;
+        Bonus = bonus;
     }
     public void SetClassSkill(bool classSkill = true)
     {
-        this.classSkill = classSkill;
+        IsClassSkill = classSkill;
     }
 }
