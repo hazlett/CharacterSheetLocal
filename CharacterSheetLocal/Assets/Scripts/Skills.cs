@@ -29,7 +29,17 @@ public class Skills {
             xmls.Serialize(stream, this);
         }
     }
-    public void LoadBaseSkills()
+    public void SaveBaseSkills(List<Skill> skills)
+    {
+        this.SkillsList = skills;
+        Debug.Log("Saving skills");
+        XmlSerializer xmls = new XmlSerializer(typeof(Skills));
+        using (FileStream stream = new FileStream("skills.xml", FileMode.Create))
+        {
+            xmls.Serialize(stream, this);
+        }
+    }
+    public List<Skill> LoadBaseSkills()
     {
         string path = "skills.xml";
         Debug.Log("Loading base skills");
@@ -46,6 +56,6 @@ public class Skills {
         {
             Debug.Log(skill.Name);
         }
-
+        return baseSkills.SkillsList;
     }
 }

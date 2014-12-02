@@ -17,7 +17,6 @@ public class SheetGUI : MonoBehaviour {
     //    ac = "", hp = "", dr = "", baseFortitude = "", baseReflex = "", baseWill = "", initiativeBonus = "";
     //dont serialize. private and/or calculated on fly
     private Character character = new Character();
-    private string loadName = "";
     private string totalLevel = "0", fortitude = "0", reflex = "0", will = "0", totalInitiative = "0", baseAttackBonus = "0";
     private int strMod, dexMod, conMod, intMod, wisMod, chaMod;
     private string strTemp = "0", dexTemp = "0", conTemp = "0", intTemp = "0", wisTemp = "0", chaTemp = "0";
@@ -31,8 +30,13 @@ public class SheetGUI : MonoBehaviour {
     private Vector2 statsScroll = new Vector2();
     private Rect statsRect = new Rect(0, Screen.height * 0.125f, Screen.width * 0.25f, Screen.height * 0.25f);
 	void Start () {
-
-
+        character = (Character)XmlHandler.Instance.Load(Global.Instance.CharacterName + ".xml", typeof(Character));
+        if (character == null)
+        {
+            character = new Character();
+            Debug.Log("No character to load");
+            character.Name = Global.Instance.CharacterName;
+        }
 	}
 
 	void Update () {
@@ -102,16 +106,15 @@ public class SheetGUI : MonoBehaviour {
         GUILayout.BeginArea(detailsRect);
         detailsScroll = GUILayout.BeginScrollView(detailsScroll);
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("MENU"))
+        {
+            Application.LoadLevel("Menu");
+        }
         if (GUILayout.Button("SAVE CHARACTER"))
         {         
             character.Save();
         }
-        GUILayout.Label("LOAD NAME: ");
-        loadName = GUILayout.TextField(loadName);
-        if (GUILayout.Button("LOAD CHARACTER"))
-        {
-            
-        }
+
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Name:"); character.Name = GUILayout.TextField(character.Name);
