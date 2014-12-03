@@ -52,10 +52,11 @@ public class Skills {
             }
         }
 
-        foreach (Skill skill in baseSkills.SkillsList)
-        {
-            Debug.Log(skill.Name);
-        }
+        //foreach (Skill skill in baseSkills.SkillsList)
+        //{
+        //    Debug.Log(skill.Name);
+        //}
+        Debug.Log("Skills loaded");
         return baseSkills.SkillsList;
     }
 }

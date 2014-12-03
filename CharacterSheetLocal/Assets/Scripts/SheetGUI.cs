@@ -18,8 +18,9 @@ public class SheetGUI : MonoBehaviour {
     
     //dont serialize. private and/or calculated on fly
     private Character character = new Character();
-    private string totalLevel = "0", fortitude = "0", reflex = "0", will = "0", totalInitiative = "0", baseAttackBonus = "0";
+    private string totalLevel = "0", totalInitiative = "0", baseAttackBonus = "0";
     private int strMod, dexMod, conMod, intMod, wisMod, chaMod;
+    private int fortitude, reflex, will;
     private string strTemp = "0", dexTemp = "0", conTemp = "0", intTemp = "0", wisTemp = "0", chaTemp = "0";
     private int strTempMod, dexTempMod, conTempMod, intTempMod, wisTempMod, chaTempMod;
 
@@ -53,25 +54,39 @@ public class SheetGUI : MonoBehaviour {
             Debug.Log("No character to load");
             character.Name = Global.Instance.CharacterName;
         }
+        strTemp = character.Strength;
+        dexTemp = character.Dexterity;
+        conTemp = character.Constitution;
+        intTemp = character.Intelligence;
+        wisTemp = character.Wisdom;
+        chaTemp = character.Charisma;
 	}
 
 	void Update () {
-        if (Input.GetKeyUp(KeyCode.L))
-        {
-            Skills.Instance.LoadBaseSkills();
-        }
         CalculateModifiers();
         CalculateSaves();
 	}
     private void CalculateModifiers()
     {
+        strMod = Mathf.FloorToInt((int.Parse(character.Strength) / 2) - 5);
+        dexMod = Mathf.FloorToInt((int.Parse(character.Dexterity) / 2) - 5);
+        conMod = Mathf.FloorToInt((int.Parse(character.Constitution) / 2) - 5);
+        intMod = Mathf.FloorToInt((int.Parse(character.Intelligence) / 2) - 5);
+        wisMod = Mathf.FloorToInt((int.Parse(character.Wisdom) / 2) - 5);
+        chaMod = Mathf.FloorToInt((int.Parse(character.Charisma) / 2) - 5);
 
+        strTempMod = Mathf.FloorToInt((int.Parse(strTemp) / 2) - 5);
+        dexTempMod = Mathf.FloorToInt((int.Parse(dexTemp) / 2) - 5);
+        conTempMod = Mathf.FloorToInt((int.Parse(conTemp) / 2) - 5);
+        intTempMod = Mathf.FloorToInt((int.Parse(intTemp) / 2) - 5);
+        wisTempMod = Mathf.FloorToInt((int.Parse(wisTemp) / 2) - 5);
+        chaTempMod = Mathf.FloorToInt((int.Parse(chaTemp) / 2) - 5);
     }
     private void CalculateSaves()
     {
-        //fortitude = baseFortitude + conMod;
-        //reflex = baseReflex + dexMod;
-        //will = baseWill + wisMod;
+        fortitude = int.Parse(character.BaseFortitude) + conTempMod + int.Parse(character.BonusFortitude);
+        reflex = int.Parse(character.BaseReflex) + dexTempMod + int.Parse(character.BonusReflex);
+        will = int.Parse(character.BaseWill) + wisTempMod + int.Parse(character.BonusWill);
     }
 
 
@@ -223,16 +238,22 @@ public class SheetGUI : MonoBehaviour {
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        GUILayout.Label("FORT: <b>" + fortitude + "</b>");
         GUILayout.Label("Base:"); character.BaseFortitude = GUILayout.TextField(character.BaseFortitude);
         GUILayout.Label("Bonus:"); character.BonusFortitude = GUILayout.TextField(character.BonusFortitude);
+        GUILayout.Label("Mod: " + conTempMod);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
+        GUILayout.Label("REFLEX: <b>" + reflex + "</b>");
         GUILayout.Label("Base:"); character.BaseReflex = GUILayout.TextField(character.BaseReflex);
         GUILayout.Label("Bonus:"); character.BonusReflex = GUILayout.TextField(character.BonusReflex);
+        GUILayout.Label("Mod: " + dexTempMod);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
+        GUILayout.Label("WILL: <b>" + will + "</b>");
         GUILayout.Label("Base:"); character.BaseWill = GUILayout.TextField(character.BaseWill);
         GUILayout.Label("Bonus:"); character.BonusWill = GUILayout.TextField(character.BonusWill);
+        GUILayout.Label("Mod: " + wisTempMod);
         GUILayout.EndHorizontal();
     
     
@@ -271,32 +292,62 @@ public class SheetGUI : MonoBehaviour {
     {
         GUILayout.BeginArea(statsRect);
         statsScroll = GUILayout.BeginScrollView(statsScroll);
+        GUILayout.BeginHorizontal();
         GUILayout.BeginVertical();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Strength");
         character.Strength = GUILayout.TextField(character.Strength);
+        GUILayout.Label(" / " + strMod);
+        GUILayout.Label("Temp");
+        strTemp = GUILayout.TextField(strTemp);
+        GUILayout.Label(" / " + strTempMod);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Dexterity");
         character.Dexterity = GUILayout.TextField(character.Dexterity);
+        GUILayout.Label(" / " + dexMod);
+        GUILayout.Label("Temp");
+        dexTemp = GUILayout.TextField(dexTemp);
+        GUILayout.Label(" / " + dexTempMod);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Constitution");
         character.Constitution = GUILayout.TextField(character.Constitution);
+        GUILayout.Label(" / " + conMod);
+        GUILayout.Label("Temp");
+        conTemp = GUILayout.TextField(conTemp);
+        GUILayout.Label(" / " + conTempMod);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Intelligence");
         character.Intelligence = GUILayout.TextField(character.Intelligence);
+        GUILayout.Label(" / " + intMod);
+        GUILayout.Label("Temp");
+        intTemp = GUILayout.TextField(intTemp);
+        GUILayout.Label(" / " + intTempMod);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Wisdom");
         character.Wisdom = GUILayout.TextField(character.Wisdom);
+        GUILayout.Label(" / " + wisMod);
+        GUILayout.Label("Temp");
+        wisTemp = GUILayout.TextField(wisTemp);
+        GUILayout.Label(" / " + wisTempMod);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Charisma");
         character.Charisma = GUILayout.TextField(character.Charisma);
+        GUILayout.Label(" / " + chaMod);
+        GUILayout.Label("Temp");
+        chaTemp = GUILayout.TextField(chaTemp);
+        GUILayout.Label(" / " + chaTempMod);
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
+        GUILayout.BeginVertical();
+        //base attack and stuff
+
+        GUILayout.EndVertical();
+        GUILayout.EndHorizontal();
         GUILayout.EndScrollView();
         GUILayout.EndArea();
     }

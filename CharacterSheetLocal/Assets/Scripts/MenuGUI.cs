@@ -22,5 +22,10 @@ public class MenuGUI : MonoBehaviour {
             Global.Instance.CharacterName = characterName;
             Application.LoadLevel("CharacterSheet");
         }
+
+        if (GUILayout.Button("Feat and skill manager"))
+        {
+            Application.LoadLevel("Manager");
+        }
     }
 }
