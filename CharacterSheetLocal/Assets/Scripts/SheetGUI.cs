@@ -355,36 +355,35 @@ public class SheetGUI : MonoBehaviour {
     private void DrawCharacterDetails()
     {
         GUILayout.BeginArea(detailsRect);
-        detailsScroll = GUILayout.BeginScrollView(detailsScroll);
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("MENU"))
         {
             Application.LoadLevel("Menu");
         }
         if (GUILayout.Button("SAVE CHARACTER"))
-        {         
+        {
             character.Save();
         }
-
         GUILayout.EndHorizontal();
+        detailsScroll = GUILayout.BeginScrollView(detailsScroll);
         GUILayout.BeginHorizontal();
         GUILayout.Label("Name:"); character.Name = GUILayout.TextField(character.Name);
-        //GUILayout.Label("Owner:"); owner = GUILayout.TextField(owner);
-        //GUILayout.Label("Race:"); race = GUILayout.TextField(race);
-        ////GUILayout.EndHorizontal();
-        ////GUILayout.BeginHorizontal();
-        //GUILayout.Label("Gender:"); gender = GUILayout.TextField(gender);
-        //GUILayout.Label("Age:"); age = GUILayout.TextField(age);
-        //GUILayout.Label("Eye:"); eye = GUILayout.TextField(eye);
-        //GUILayout.Label("Hair:"); hair = GUILayout.TextField(hair);
-        ////GUILayout.EndHorizontal();
-        ////GUILayout.BeginHorizontal();
-        //GUILayout.Label("Scars/Tats:"); scars = GUILayout.TextField(scars);
-        //GUILayout.Label("Height:"); height = GUILayout.TextField(height);
-        //GUILayout.Label("Weight:"); weight = GUILayout.TextField(weight);
-        //GUILayout.Label("Speed:"); speed = GUILayout.TextField(speed);
-        //GUILayout.Label("Exp:"); experience = GUILayout.TextField(experience);
-        //GUILayout.Label("Money:"); money = GUILayout.TextField(money);
+        GUILayout.Label("Owner:"); character.Owner = GUILayout.TextField(character.Owner);
+        GUILayout.Label("Race:"); character.Race = GUILayout.TextField(character.Race);
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Gender:"); character.Gender = GUILayout.TextField(character.Gender);
+        GUILayout.Label("Age:"); character.Age = GUILayout.TextField(character.Age);
+        GUILayout.Label("Eye:"); character.Eye = GUILayout.TextField(character.Eye);
+        GUILayout.Label("Hair:"); character.Hair = GUILayout.TextField(character.Hair);
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Scars/Tats:"); character.Scars = GUILayout.TextField(character.Scars);
+        GUILayout.Label("Height:"); character.Height = GUILayout.TextField(character.Height);
+        GUILayout.Label("Weight:"); character.Weight = GUILayout.TextField(character.Weight);
+        GUILayout.Label("Speed:"); character.Speed = GUILayout.TextField(character.Speed);
+        GUILayout.Label("Exp:"); character.Experience = GUILayout.TextField(character.Experience);
+        GUILayout.Label("Money:"); character.Money = GUILayout.TextField(character.Money);
         GUILayout.EndHorizontal();
 
         GUILayout.EndScrollView();
