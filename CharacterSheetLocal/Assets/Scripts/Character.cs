@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Collections.Generic;
 using System;
+using System.Xml;
 
 [XmlRoot]
 public class Character {
@@ -100,7 +101,7 @@ public class Character {
     }
     public void Save()
     {
-        Debug.Log("Saving character");
+        Debug.Log("Saving character locally");
         XmlSerializer xmls = new XmlSerializer(typeof(Character));
         using (FileStream stream = new FileStream("Characters//" + Name + ".xml", FileMode.Create))
         {
@@ -108,6 +109,5 @@ public class Character {
         }
         Debug.Log("Character saved");
     }
-
 
 }

@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Xml.Serialization;
+using System.IO;
 public class SheetGUI : MonoBehaviour {
     private List<Character> characters = new List<Character>();
     private Character character = new Character();
@@ -39,16 +41,27 @@ public class SheetGUI : MonoBehaviour {
 	void Start () {
         if (Global.Instance.DungeonMaster)
         {
-            characters = (List<Character>)XmlHandler.Instance.Load("Campaigns//" + Global.Instance.Campaign + ".xml", typeof(List<Character>));
-            character = new Character();
+            characters = Global.Instance.Campaign;
+            character = characters[0];
         }
-        else
+        else if (Global.Instance.Local)
         {
             character = (Character)XmlHandler.Instance.Load("Characters//" + Global.Instance.CharacterName + ".xml", typeof(Character));
             if (character == null)
             {
                 character = new Character();
                 Debug.Log("No character to load");
+                character.Name = Global.Instance.CharacterName;
+                characters.Add(character);
+            }
+        }
+        else
+        {
+            character = Global.Instance.CurrentCharacter;
+            if (character == null)
+            {
+                character = new Character();
+                Debug.Log("No character");
                 character.Name = Global.Instance.CharacterName;
                 characters.Add(character);
             }
@@ -357,11 +370,18 @@ public class SheetGUI : MonoBehaviour {
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("MENU"))
         {
-            Application.LoadLevel("Menu");
+            Application.LoadLevel("Loading");
         }
         if (GUILayout.Button("SAVE CHARACTER"))
         {
-            character.Save();
+            if (Global.Instance.Local)
+            {
+                character.Save();
+            }
+            else
+            {
+                SaveToServer();
+            }
         }
         if (GUILayout.Button("NEW CHARACTER"))
         {
@@ -416,6 +436,33 @@ public class SheetGUI : MonoBehaviour {
 
         GUILayout.EndScrollView();
         GUILayout.EndArea();
+    }
+    private void SaveToServer()
+    {
+        Debug.Log("Saving character to server");
+        XmlSerializer xmls = new XmlSerializer(typeof(Character));
+        StringWriter writer = new StringWriter();
+        xmls.Serialize(writer, character);
+        writer.Close();
+        WWWForm form = new WWWForm();
+        form.AddField("name", character.Name);
+        form.AddField("file", writer.ToString());
+        WWW www = new WWW("http://hazlett206.ddns.net/DND/SaveCharacter.php", form);
+        StartCoroutine(UploadToServer(www));
+    }
+    IEnumerator UploadToServer(WWW www)
+    {
+        yield return www;
+
+        if (www.error == null)
+        {
+            Debug.Log("Save successful");
+            Debug.Log(www.text);
+        }
+        else
+        {
+            Debug.Log("WWW Error: " + www.error);
+        }
     }
     private void DrawSkills()
     {

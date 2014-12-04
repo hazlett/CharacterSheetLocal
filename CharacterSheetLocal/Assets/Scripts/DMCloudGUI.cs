@@ -1,72 +1,73 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Xml;
-using System.Xml.Serialization;
-using System.IO;
 using System.Collections.Generic;
-using System;
-public class PHPTest : MonoBehaviour {
-
-    private List<string> characterNames, campaignNames;
+using System.Xml.Serialization;
+using System.Xml;
+public class DMCloudGUI : MonoBehaviour {
+    private List<string> campaignNames;
     private List<Character> characters = new List<Character>();
-    void Start()
-    {
+    private string message = "";
+    private int loading = 0;
+    private bool load = false;
+    private bool autoStart = true;
+	void Start () {
         Refresh();
-        
+	}
+	void Update()
+    {
+        if ((autoStart) && (load) && (loading == 0))
+        {
+            StartCampaign();
+        }
     }
-
-
     void OnGUI()
     {
+        GUILayout.Label(message);
+        if (GUILayout.Button("MAIN MENU"))
+        {
+            Application.LoadLevel("Loading");
+        }
+        GUILayout.Space(10.0f);
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("REFRESH"))
         {
             Refresh();
         }
-        foreach(string name in characterNames)
+        autoStart = GUILayout.Toggle(autoStart, "AUTO START");
+        GUILayout.EndHorizontal();
+        GUILayout.Space(10.0f);
+        GUILayout.Label("<b>CLICK A NAME TO LOAD THAT CAMPAIGN</b>");
+        GUILayout.BeginHorizontal();
+        foreach (string name in campaignNames)
         {
             if (GUILayout.Button(name))
             {
-                LoadCharacter(name);
-            }
-        }
-        foreach(string name in campaignNames)
-        {
-            if(GUILayout.Button(name))
-            {
+
                 LoadCampaign(name);
             }
         }
-        GUILayout.Space(50.0f);
-        GUILayout.Label("<b>CAMPAIGN CHARACTERS</b>");
-        foreach(Character c in characters)
+        GUILayout.EndHorizontal();
+
+        GUILayout.Space(10.0f);
+        GUILayout.Label("<b>LIST OF CHARACTERS IN CAMPAIGN</b>");
+        GUILayout.BeginHorizontal();
+        foreach (Character c in characters)
         {
             GUILayout.Label(c.Name);
         }
-        if (GUILayout.Button("LOAD CAMPAIGN"))
+        GUILayout.EndHorizontal();
+        GUILayout.Space(5.0f);
+        if (GUILayout.Button("START THIS CAMPAIGN"))
         {
-            Global.Instance.DungeonMaster = true;
-            Global.Instance.Campaign = characters;
-            Application.LoadLevel("CharacterSheet");
+            StartCampaign();
         }
     }
-    private void Refresh()
+    private void StartCampaign()
     {
-        characterNames = new List<string>();
-        campaignNames = new List<string>();
-        string url = "http://hazlett206.ddns.net/DND/GetCharacters.php";
-        WWW www = new WWW(url);
-        StartCoroutine(RefreshCharactersList(www));
-        StartCoroutine(RefreshCampaignsList(new WWW("http://hazlett206.ddns.net/DND/GetCampaigns.php")));
-    }
-
-    private void LoadCharacter(string file)
-    {
-        string url = "http://hazlett206.ddns.net/DND/LoadCharacter.php";
-        WWWForm form = new WWWForm();
-        form.AddField("fileName", file);
-        WWW www = new WWW(url, form);
-
-        StartCoroutine(WaitForCharacter(www));
+        Global.Instance.Local = false;
+        Global.Instance.DungeonMaster = true;
+        Global.Instance.Campaign = characters;
+        Application.LoadLevel("CharacterSheet");
     }
     private void LoadCampaign(string file)
     {
@@ -77,9 +78,15 @@ public class PHPTest : MonoBehaviour {
         characters = new List<Character>();
         StartCoroutine(WaitForCampaign(www));
     }
+    private void Refresh()
+    {
+        campaignNames = new List<string>();
+        StartCoroutine(RefreshCampaignsList(new WWW("http://hazlett206.ddns.net/DND/GetCampaigns.php")));
+    }
 
     IEnumerator WaitForCampaign(WWW www)
     {
+        loading = 0;
         yield return www;
 
         // check for errors
@@ -98,15 +105,18 @@ public class PHPTest : MonoBehaviour {
             {
                 obj = new List<string>();
             }
-            foreach(string name in obj)
+            foreach (string name in obj)
             {
+                loading++;
                 string url = "http://hazlett206.ddns.net/DND/LoadCharacter.php";
                 WWWForm form = new WWWForm();
                 form.AddField("fileName", name);
                 WWW www2 = new WWW(url, form);
 
                 StartCoroutine(AddCharacterToCampaign(www2));
+                
             }
+            load = true;
         }
         else
         {
@@ -140,6 +150,7 @@ public class PHPTest : MonoBehaviour {
         {
             Debug.Log("WWW Error: " + www.error);
         }
+        loading--;
     }
     IEnumerator RefreshCampaignsList(WWW www)
     {
@@ -171,65 +182,4 @@ public class PHPTest : MonoBehaviour {
         }
     }  
 
-    IEnumerator RefreshCharactersList(WWW www)
-    {
-        yield return www;
-
-        // check for errors
-        if (www.error == null)
-        {
-            Debug.Log("WWW Ok!: " + www.text);
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(www.text);
-
-           
-            XmlSerializer serializer = new XmlSerializer(typeof(List<string>));
-            XmlReader reader = new XmlNodeReader(doc);
-
-            characterNames = serializer.Deserialize(reader) as List<string>;
-            if (characterNames == null)
-            {
-                Debug.Log("NULL NAMES");
-                characterNames = new List<string>();
-            }
-            Debug.Log(characterNames.Count);
-            Debug.Log("Character names loaded");
-        }
-        else
-        {
-            Debug.Log("WWW Error: " + www.error);
-        }
-    }  
-    IEnumerator WaitForCharacter(WWW www)
-    {
-        yield return www;
-
-        // check for errors
-        if (www.error == null)
-        {
-            Debug.Log("WWW Ok!: " + www.text);
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(www.text);
-
-            Character obj = new Character();
-            XmlSerializer serializer = new XmlSerializer(typeof(Character));
-            XmlReader reader = new XmlNodeReader(doc);
-
-            obj = serializer.Deserialize(reader) as Character;
-            if (obj == null)
-            {
-                obj = new Character();
-            }
-            Debug.Log(obj.Name);
-            Global.Instance.CurrentCharacter = obj;
-            Global.Instance.DungeonMaster = false;
-            Global.Instance.Local = false;
-            Application.LoadLevel("CharacterSheet");
-
-        }
-        else
-        {
-            Debug.Log("WWW Error: " + www.error);
-        }
-    }
 }

@@ -24,13 +24,13 @@ public class MenuGUI : MonoBehaviour {
             Global.Instance.DungeonMaster = false;
             Application.LoadLevel("CharacterSheet");
         }
-        GUILayout.Label("Campaign Name:"); campaignName = GUILayout.TextField(campaignName);
-        if (GUILayout.Button("Load Campaign"))
-        {
-            Global.Instance.Campaign = campaignName;
-            Global.Instance.DungeonMaster = true;
-            Application.LoadLevel("CharacterSheet");
-        }
+        //GUILayout.Label("Campaign Name:"); campaignName = GUILayout.TextField(campaignName);
+        //if (GUILayout.Button("Load Campaign"))
+        //{
+        //    Global.Instance.Campaign = campaignName;
+        //    Global.Instance.DungeonMaster = true;
+        //    Application.LoadLevel("CharacterSheet");
+        //}
         if (GUILayout.Button("Campaign Manager"))
         {
             Application.LoadLevel("CampaignManager");
