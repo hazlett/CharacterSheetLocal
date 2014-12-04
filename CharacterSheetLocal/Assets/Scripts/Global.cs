@@ -7,4 +7,6 @@ public class Global {
     public static Global Instance { get { return instance; } }
 
     public string CharacterName;
+    public string Campaign;
+    public bool DungeonMaster;
 }

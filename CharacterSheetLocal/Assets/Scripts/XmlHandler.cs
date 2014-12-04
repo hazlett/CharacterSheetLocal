@@ -17,6 +17,7 @@ public class XmlHandler {
         {
             xmls.Serialize(stream, item);
         }
+        Debug.Log("Saved xml");
     }
     public object Load(string fileName, Type type)
     {

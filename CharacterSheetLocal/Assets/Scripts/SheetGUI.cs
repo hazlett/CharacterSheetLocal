@@ -3,26 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 public class SheetGUI : MonoBehaviour {
-    //serialize. could all be in Character
-    //private string name = "name", owner = "owner", race = "race", gender = "gender",
-    //    age = "age", eye = "eye", hair = "hair", scars = "scars", height = "height", 
-    //    weight = "weight", speed = "speed";
-    //private List<string> languages;
-    //private List<Feat> feats;
-    //private List<Item> inventory;
-    //private List<Class> classes;
-    //private List<Skill> skills;
-    //private string experience = "0000", money = "0000",
-    //    strength = "", dexterity = "", constitution = "", intelligence = "", wisdom = "", charisma = "",
-    //    ac = "", hp = "", dr = "", baseFortitude = "", baseReflex = "", baseWill = "", initiativeBonus = "";
-    
-    //dont serialize. private and/or calculated on fly
+    private List<Character> characters = new List<Character>();
     private Character character = new Character();
     private string totalLevel = "0", totalInitiative = "0", baseAttackBonus = "0";
     private int strMod, dexMod, conMod, intMod, wisMod, chaMod;
     private int fortitude, reflex, will;
     private string strTemp = "0", dexTemp = "0", conTemp = "0", intTemp = "0", wisTemp = "0", chaTemp = "0";
     private int strTempMod, dexTempMod, conTempMod, intTempMod, wisTempMod, chaTempMod;
+    
+    private string load = "", campaign = "";
+
 
     //GUI stuff
 
@@ -47,12 +37,21 @@ public class SheetGUI : MonoBehaviour {
     private Rect languagesRect = new Rect(Screen.width * 0.5f, Screen.height * 0.875f, Screen.width * 0.5f, Screen.height * 0.125f);
 
 	void Start () {
-        character = (Character)XmlHandler.Instance.Load("Characters//" + Global.Instance.CharacterName + ".xml", typeof(Character));
-        if (character == null)
+        if (Global.Instance.DungeonMaster)
         {
+            characters = (List<Character>)XmlHandler.Instance.Load("Campaigns//" + Global.Instance.Campaign + ".xml", typeof(List<Character>));
             character = new Character();
-            Debug.Log("No character to load");
-            character.Name = Global.Instance.CharacterName;
+        }
+        else
+        {
+            character = (Character)XmlHandler.Instance.Load("Characters//" + Global.Instance.CharacterName + ".xml", typeof(Character));
+            if (character == null)
+            {
+                character = new Character();
+                Debug.Log("No character to load");
+                character.Name = Global.Instance.CharacterName;
+                characters.Add(character);
+            }
         }
         strTemp = character.Strength;
         dexTemp = character.Dexterity;
@@ -363,6 +362,35 @@ public class SheetGUI : MonoBehaviour {
         if (GUILayout.Button("SAVE CHARACTER"))
         {
             character.Save();
+        }
+        if (GUILayout.Button("NEW CHARACTER"))
+        {
+            character = new Character();
+            characters.Add(character);
+        }
+        foreach(Character c in characters)
+        {
+            if (GUILayout.Button(c.Name))
+            {
+                character = c;
+            }
+        }
+        load = GUILayout.TextField(load);
+        if (GUILayout.Button("ADD CHARACTER"))
+        {
+            Character temp = (Character)XmlHandler.Instance.Load("Characters//" + load + ".xml", typeof(Character));
+            if (temp == null)
+            {
+                temp = new Character();
+                Debug.Log("No character to load");
+                temp.Name = load;
+            }
+            characters.Add(temp);
+        }
+        campaign = GUILayout.TextField(campaign);
+        if (GUILayout.Button("SAVE CAMPAIGN"))
+        {
+            XmlHandler.Instance.Save("Campaigns//" + campaign + ".xml", typeof(List<Character>), characters);
         }
         GUILayout.EndHorizontal();
         detailsScroll = GUILayout.BeginScrollView(detailsScroll);
