@@ -30,7 +30,7 @@ public class Loading : MonoBehaviour {
         if (GUILayout.Button("LOCAL"))
         {
             Global.Instance.Local = true;
-            Application.LoadLevel("Menu");
+            Application.LoadLevel("LocalMenu");
         }
     }
     private void DrawCloud()

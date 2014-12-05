@@ -8,6 +8,7 @@ public class Global {
 
     public string CharacterName;
     public List<Character> Campaign;
+    public string CampaignName;
     public bool DungeonMaster;
     public Character CurrentCharacter;
     public bool Local;

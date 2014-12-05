@@ -42,7 +42,16 @@ public class SheetGUI : MonoBehaviour {
         if (Global.Instance.DungeonMaster)
         {
             characters = Global.Instance.Campaign;
-            character = characters[0];
+            if (characters == null)
+            {
+                characters = new List<Character>();
+                character = new Character();
+            }
+            else
+            {
+                character = characters[0];
+            }
+            campaign = Global.Instance.CampaignName;
         }
         else if (Global.Instance.Local)
         {
@@ -372,16 +381,13 @@ public class SheetGUI : MonoBehaviour {
         {
             Application.LoadLevel("Loading");
         }
-        if (GUILayout.Button("SAVE CHARACTER"))
+        if (GUILayout.Button("SAVE CHARACTER LOCAL"))
         {
-            if (Global.Instance.Local)
-            {
-                character.Save();
-            }
-            else
-            {
-                SaveToServer();
-            }
+            character.Save();
+        }
+        if (GUILayout.Button("SAVE CHARACTER CLOUD"))
+        {
+            SaveToServer();
         }
         if (GUILayout.Button("NEW CHARACTER"))
         {

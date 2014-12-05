@@ -29,7 +29,7 @@ public class CampaignManagerUI : MonoBehaviour {
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("MENU"))
         {
-            Application.LoadLevel("Menu");
+            Application.LoadLevel("LocalMenu");
         }
         GUILayout.EndHorizontal();
         GUILayout.Label("CAMPAIGN:"); campaign = GUILayout.TextField(campaign);
