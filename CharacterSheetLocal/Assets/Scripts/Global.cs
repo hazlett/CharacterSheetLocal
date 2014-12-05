@@ -7,8 +7,8 @@ public class Global {
     public static Global Instance { get { return instance; } }
 
     public string CharacterName;
-    public List<Character> Campaign;
     public string CampaignName;
+    public List<Character> CampaignCharacters;
     public bool DungeonMaster;
     public Character CurrentCharacter;
     public bool Local;

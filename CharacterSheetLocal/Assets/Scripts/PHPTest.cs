@@ -45,7 +45,7 @@ public class PHPTest : MonoBehaviour {
         if (GUILayout.Button("LOAD CAMPAIGN"))
         {
             Global.Instance.DungeonMaster = true;
-            Global.Instance.Campaign = characters;
+            Global.Instance.CampaignCharacters = characters;
             Application.LoadLevel("CharacterSheet");
         }
     }

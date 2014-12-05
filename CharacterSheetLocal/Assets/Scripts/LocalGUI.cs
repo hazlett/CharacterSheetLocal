@@ -2,6 +2,8 @@
 using System.Collections;
 using System.IO;
 using System.Collections.Generic;
+using System.Xml.Serialization;
+using System.Xml;
 
 public class LocalGUI : MonoBehaviour {
     private Vector2 leftScroll = new Vector2();
@@ -9,7 +11,7 @@ public class LocalGUI : MonoBehaviour {
     private Vector2 rightScroll = new Vector2();
     private Rect rightRect = new Rect(Screen.width * 0.55f, 20.0f, Screen.width * 0.45f, Screen.height);
     private string[] characterFiles = null, campaignFiles = null;
-    private List<Character> characters;
+    private List<Character> characters, campaignCharacters;
     void Start()
     {
         Refresh();
@@ -100,9 +102,37 @@ public class LocalGUI : MonoBehaviour {
     {
         Global.Instance.DungeonMaster = true;
         Global.Instance.Local = false;
-        List<Character> campaign = (List<Character>)XmlHandler.Instance.Load(name, typeof(List<Character>));
-        Global.Instance.Campaign = campaign;
+        Debug.Log("Loading Campaign");
+        Debug.Log(name);
+
+        FileStream stream = new FileStream(name, FileMode.Open);
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(stream.ToString());
+        
+        Campaign campaign = new Campaign();
+        XmlSerializer serializer = new XmlSerializer(typeof(Campaign));
+        XmlReader reader = new XmlNodeReader(doc);
+        Debug.Log("Read");
+      
+        campaign = serializer.Deserialize(reader) as Campaign;
+        if (campaign == null)
+        {
+            campaign = new Campaign();
+        }
+
+
+
+        
         Global.Instance.CampaignName = name;
+        campaignCharacters = new List<Character>();
+        Debug.Log("Campaign Loaded");
+        foreach (string file in campaign.CharacterNames)
+        {
+            Character c = (Character)XmlHandler.Instance.Load("Characters//" + file + ".xml", typeof(Character));
+            campaignCharacters.Add(c);
+        }
+
+        Global.Instance.CampaignCharacters = campaignCharacters;
         Application.LoadLevel("CharacterSheet");        
     }
 }

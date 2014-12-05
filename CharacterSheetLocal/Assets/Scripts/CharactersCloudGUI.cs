@@ -9,11 +9,6 @@ public class CharactersCloudGUI : MonoBehaviour {
 	void Start () {
         Refresh();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	   
-	}
 
     void OnGUI()
     {
@@ -84,6 +79,7 @@ public class CharactersCloudGUI : MonoBehaviour {
                 Debug.Log("NULL NAMES");
                 characterNames = new List<string>();
             }
+            characterNames.Sort();
             Debug.Log(characterNames.Count);
             Debug.Log("Character names loaded");
         }
@@ -96,13 +92,11 @@ public class CharactersCloudGUI : MonoBehaviour {
     {
         yield return www;
 
-        // check for errors
         if (www.error == null)
         {
             Debug.Log("WWW Ok!: " + www.text);
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(www.text);
-
             Character obj = new Character();
             XmlSerializer serializer = new XmlSerializer(typeof(Character));
             XmlReader reader = new XmlNodeReader(doc);

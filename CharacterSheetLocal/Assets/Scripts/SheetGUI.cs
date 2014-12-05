@@ -41,7 +41,7 @@ public class SheetGUI : MonoBehaviour {
 	void Start () {
         if (Global.Instance.DungeonMaster)
         {
-            characters = Global.Instance.Campaign;
+            characters = Global.Instance.CampaignCharacters;
             if (characters == null)
             {
                 characters = new List<Character>();
@@ -49,9 +49,10 @@ public class SheetGUI : MonoBehaviour {
             }
             else
             {
+                campaign = "";
                 character = characters[0];
             }
-            campaign = Global.Instance.CampaignName;
+          
         }
         else if (Global.Instance.Local)
         {
@@ -401,23 +402,19 @@ public class SheetGUI : MonoBehaviour {
                 character = c;
             }
         }
-        load = GUILayout.TextField(load);
-        if (GUILayout.Button("ADD CHARACTER"))
-        {
-            Character temp = (Character)XmlHandler.Instance.Load("Characters//" + load + ".xml", typeof(Character));
-            if (temp == null)
-            {
-                temp = new Character();
-                Debug.Log("No character to load");
-                temp.Name = load;
-            }
-            characters.Add(temp);
-        }
-        campaign = GUILayout.TextField(campaign);
-        if (GUILayout.Button("SAVE CAMPAIGN"))
-        {
-            XmlHandler.Instance.Save("Campaigns//" + campaign + ".xml", typeof(List<Character>), characters);
-        }
+        //load = GUILayout.TextField(load);
+        //if (GUILayout.Button("ADD CHARACTER"))
+        //{
+        //    Character temp = (Character)XmlHandler.Instance.Load("Characters//" + load + ".xml", typeof(Character));
+        //    if (temp == null)
+        //    {
+        //        temp = new Character();
+        //        Debug.Log("No character to load");
+        //        temp.Name = load;
+        //    }
+        //    characters.Add(temp);
+        //}
+        GUILayout.Label("<b>CAMPAIGN: " + campaign +"</b>");
         GUILayout.EndHorizontal();
         detailsScroll = GUILayout.BeginScrollView(detailsScroll);
         GUILayout.BeginHorizontal();
