@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.IO;
 
 public class CampaignManagerUI : MonoBehaviour {
-    private string campaign = "";
+    private string campaignName = "";
     private List<Character> characters = new List<Character>();
     private List<Character> allCharacters = new List<Character>();
+    private Campaign campaign;
 	void Start () {
 	    string[] files = Directory.GetFiles("Characters");
+        campaign = new Campaign();
         foreach (string file in files)
         {
             Character c = (Character)XmlHandler.Instance.Load(file, typeof(Character));
@@ -17,7 +19,6 @@ public class CampaignManagerUI : MonoBehaviour {
                 allCharacters.Add(c);
             }
         }
-
 	}
 	
 	void Update () {
@@ -32,10 +33,16 @@ public class CampaignManagerUI : MonoBehaviour {
             Application.LoadLevel("LocalMenu");
         }
         GUILayout.EndHorizontal();
-        GUILayout.Label("CAMPAIGN:"); campaign = GUILayout.TextField(campaign);
+        GUILayout.Label("CAMPAIGN:"); campaignName = GUILayout.TextField(campaignName);
         if (GUILayout.Button("SAVE CAMPAIGN"))
         {
-            XmlHandler.Instance.Save("Campaigns//" + campaign + ".xml", typeof(List<Character>), characters);
+            campaign.Name = campaignName;
+            campaign.CharacterNames = new List<string>();
+            foreach(Character c in characters)
+            {
+                campaign.CharacterNames.Add(c.Name);
+            }
+            XmlHandler.Instance.Save("Campaigns//" + campaignName + ".xml", typeof(Campaign), campaign);
         }
         GUILayout.Label("ALL CHARACTERS. CLICK TO ADD TO CAMPAIGN");
         GUILayout.BeginHorizontal();

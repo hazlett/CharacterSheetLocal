@@ -3,26 +3,12 @@ using System.Collections;
 
 public class Loading : MonoBehaviour {
 
-
-	void Start () {
-	
-	}
-	
-	void Update () {
-	
-	}
-
     void OnGUI()
     {
-
-
-#if UNITY_WEBPLAYER
-        Global.Instance.Local = false;
-        DrawCloud();
-#else
-        DrawLocal();
-        DrawCloud();
+#if !UNITY_WEBPLAYER
+        DrawLocal();      
 #endif
+        DrawCloud();
 
     }
     private void DrawLocal()
@@ -38,11 +24,13 @@ public class Loading : MonoBehaviour {
         GUILayout.Space(10.0f);
         if (GUILayout.Button("CHARACTER CLOUD"))
         {
+            Global.Instance.Local = false;
             Application.LoadLevel("CharactersCloud");
         }
         GUILayout.Space(10.0f);
         if (GUILayout.Button("DM CLOUD"))
         {
+            Global.Instance.Local = false;
             Application.LoadLevel("DMCloud");
         }
     }

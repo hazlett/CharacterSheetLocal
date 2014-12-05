@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<Campaign xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="TestCamp">
+  <CharacterNames>12-05-2014</CharacterNames>
+  <CharacterNames>12-5-14</CharacterNames>
+  <CharacterNames>Test Character</CharacterNames>
+</Campaign>
