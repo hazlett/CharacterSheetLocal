@@ -45,7 +45,10 @@ public class LocalGUI : MonoBehaviour {
         GUILayout.Label("<b>CHARACTERS. CLICK TO LOAD</b>");
         if (GUILayout.Button("NEW CHARACTER"))
         {
-            LoadCharacter(null);
+            Global.Instance.DungeonMaster = false;
+            Global.Instance.Local = true;
+            Global.Instance.CharacterName = "";
+            Application.LoadLevel("CharacterSheet");
         }
         GUILayout.Space(5.0f);
         foreach (Character c in characters)
@@ -60,10 +63,6 @@ public class LocalGUI : MonoBehaviour {
         GUILayout.BeginArea(rightRect);
         GUILayout.BeginScrollView(rightScroll);
         GUILayout.Label("<b>CAMPAIGNS. CLICK TO LOAD</b>");
-        if (GUILayout.Button("NEW CAMPAIGN"))
-        {
-            LoadCampaign(null);
-        }
         GUILayout.Space(5.0f);
         foreach (string name in campaignFiles)
         {
@@ -105,16 +104,8 @@ public class LocalGUI : MonoBehaviour {
         Debug.Log("Loading Campaign");
         Debug.Log(name);
 
-        FileStream stream = new FileStream(name, FileMode.Open);
-        XmlDocument doc = new XmlDocument();
-        doc.LoadXml(stream.ToString());
-        
-        Campaign campaign = new Campaign();
-        XmlSerializer serializer = new XmlSerializer(typeof(Campaign));
-        XmlReader reader = new XmlNodeReader(doc);
-        Debug.Log("Read");
-      
-        campaign = serializer.Deserialize(reader) as Campaign;
+
+        Campaign campaign = (Campaign)XmlHandler.Instance.Load(name, typeof(Campaign));
         if (campaign == null)
         {
             campaign = new Campaign();

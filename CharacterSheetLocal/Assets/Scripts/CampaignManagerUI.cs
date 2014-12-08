@@ -4,15 +4,20 @@ using System.Collections.Generic;
 using System.IO;
 
 public class CampaignManagerUI : MonoBehaviour {
-    private string campaign = "";
+    private string campaignName = "";
     private List<Character> characters = new List<Character>();
     private List<Character> allCharacters = new List<Character>();
+<<<<<<< HEAD
     private Vector2 leftScroll = new Vector2();
     private Rect leftRect = new Rect(0, 0, Screen.width * 0.5f, Screen.height);
     private Vector2 rightScroll = new Vector2();
     private Rect rightRect = new Rect(Screen.width * 0.5f, 0, Screen.width * 0.5f, Screen.height);
+=======
+    private Campaign campaign;
+>>>>>>> origin/master
 	void Start () {
 	    string[] files = Directory.GetFiles("Characters");
+        campaign = new Campaign();
         foreach (string file in files)
         {
             Character c = (Character)XmlHandler.Instance.Load(file, typeof(Character));
@@ -37,11 +42,22 @@ public class CampaignManagerUI : MonoBehaviour {
             Application.LoadLevel("Loading");
         }
         GUILayout.EndHorizontal();
+<<<<<<< HEAD
         GUILayout.Label("CAMPAIGN:"); campaign = GUILayout.TextField(campaign);
 #if !UNITY_WEBPLAYER
         if (GUILayout.Button("SAVE CAMPAIGN LOCAL"))
+=======
+        GUILayout.Label("CAMPAIGN:"); campaignName = GUILayout.TextField(campaignName);
+        if (GUILayout.Button("SAVE CAMPAIGN"))
+>>>>>>> origin/master
         {
-            XmlHandler.Instance.Save("Campaigns//" + campaign + ".xml", typeof(List<Character>), characters);
+            campaign.Name = campaignName;
+            campaign.CharacterNames = new List<string>();
+            foreach(Character c in characters)
+            {
+                campaign.CharacterNames.Add(c.Name);
+            }
+            XmlHandler.Instance.Save("Campaigns//" + campaignName + ".xml", typeof(Campaign), campaign);
         }
 #endif
         if (GUILayout.Button("SAVE CAMPAIGN CLOUD"))

@@ -13,9 +13,9 @@ public class SheetGUI : MonoBehaviour {
     private string strTemp = "0", dexTemp = "0", conTemp = "0", intTemp = "0", wisTemp = "0", chaTemp = "0";
     private int strTempMod, dexTempMod, conTempMod, intTempMod, wisTempMod, chaTempMod;
     
-    private string load = "", campaign = "";
+    private string load = "", campaign = "", message;
 
-
+    private float timer = 0.0f;
     //GUI stuff
 
     //Both sides (header)
@@ -36,9 +36,12 @@ public class SheetGUI : MonoBehaviour {
     private Vector2 skillsScroll = new Vector2();
     private Rect skillsRect = new Rect(Screen.width * 0.5f, Screen.height * 0.375f, Screen.width * 0.5f, Screen.height * 0.5f);
     private Vector2 languagesScroll = new Vector2();
-    private Rect languagesRect = new Rect(Screen.width * 0.5f, Screen.height * 0.875f, Screen.width * 0.5f, Screen.height * 0.125f);
+    private Rect languagesRect = new Rect(Screen.width * 0.5f, Screen.height * 0.875f, Screen.width * 0.5f, Screen.height * 0.1f);
+    private Vector2 messageScroll = new Vector2();
+    private Rect messageRect = new Rect(Screen.width * 0.5f, Screen.height * .975f, Screen.width * 0.5f, Screen.height * 0.25f);
 
 	void Start () {
+        campaign = "";
         if (Global.Instance.DungeonMaster)
         {
             characters = Global.Instance.CampaignCharacters;
@@ -49,10 +52,14 @@ public class SheetGUI : MonoBehaviour {
             }
             else
             {
-                campaign = "";
+                campaign = Global.Instance.CampaignName;   
+                if (campaign == null)
+                {
+                    Debug.Log("No campaign name");
+                    campaign = "";
+                }
                 character = characters[0];
-            }
-          
+            }    
         }
         else if (Global.Instance.Local)
         {
@@ -85,9 +92,40 @@ public class SheetGUI : MonoBehaviour {
 	}
 
 	void Update () {
+        UpdateResolutions();
+        if (message != null)
+        {
+            timer += Time.deltaTime;
+            if (timer >= 5)
+            {
+                message = null;
+                timer = 0;
+            }
+        }
         CalculateModifiers();
         CalculateSaves();
 	}
+    private void UpdateResolutions()
+    {
+        detailsRect = new Rect(0, 0, Screen.width, Screen.height * 0.125f);
+
+        statsRect = new Rect(0, Screen.height * 0.125f, Screen.width * 0.25f, Screen.height * 0.25f);
+
+        weaponsRect = new Rect(0, Screen.height * 0.375f, Screen.width * 0.5f, Screen.height * 0.25f);
+
+        featsRect = new Rect(0, Screen.height * 0.625f, Screen.width * 0.5f, Screen.height * 0.25f);
+
+        inventoryRect = new Rect(0, Screen.height * 0.875f, Screen.width * 0.5f, Screen.height * 0.125f);
+
+        savesRect = new Rect(Screen.width * 0.5f, Screen.height * 0.125f, Screen.width * 0.5f, Screen.height * 0.25f);
+
+        skillsRect = new Rect(Screen.width * 0.5f, Screen.height * 0.375f, Screen.width * 0.5f, Screen.height * 0.5f);
+
+        languagesRect = new Rect(Screen.width * 0.5f, Screen.height * 0.875f, Screen.width * 0.5f, Screen.height * 0.1f);
+
+        messageRect = new Rect(Screen.width * 0.5f, Screen.height * .975f, Screen.width * 0.5f, Screen.height * 0.25f);
+
+    }
     private void CalculateModifiers()
     {
         strMod = Mathf.FloorToInt((int.Parse(character.Strength) / 2) - 5);
@@ -123,6 +161,19 @@ public class SheetGUI : MonoBehaviour {
         DrawInventory();
         DrawSaves();
         DrawLanguages();
+        DrawMessage();
+    }
+
+    private void DrawMessage()
+    {
+        GUILayout.BeginArea(messageRect);
+        messageScroll = GUILayout.BeginScrollView(messageScroll);
+        if (message != null)
+        {
+            GUILayout.Label(message);
+        }
+        GUILayout.EndScrollView();
+        GUILayout.EndArea();
     }
 
     private void DrawWeapons() 
@@ -381,40 +432,71 @@ public class SheetGUI : MonoBehaviour {
         if (GUILayout.Button("MENU"))
         {
             Application.LoadLevel("Loading");
-        }
+        } 
+#if !UNITY_WEBPLAYER
         if (GUILayout.Button("SAVE CHARACTER LOCAL"))
         {
-            character.Save();
+            message = character.Save();
         }
+#endif
         if (GUILayout.Button("SAVE CHARACTER CLOUD"))
         {
             SaveToServer();
         }
+
         if (GUILayout.Button("NEW CHARACTER"))
         {
             character = new Character();
-            characters.Add(character);
-        }
-        foreach(Character c in characters)
-        {
-            if (GUILayout.Button(c.Name))
+            if (Global.Instance.DungeonMaster)
             {
-                character = c;
+                characters.Add(character);
             }
         }
-        //load = GUILayout.TextField(load);
-        //if (GUILayout.Button("ADD CHARACTER"))
-        //{
-        //    Character temp = (Character)XmlHandler.Instance.Load("Characters//" + load + ".xml", typeof(Character));
-        //    if (temp == null)
-        //    {
-        //        temp = new Character();
-        //        Debug.Log("No character to load");
-        //        temp.Name = load;
-        //    }
-        //    characters.Add(temp);
-        //}
-        GUILayout.Label("<b>CAMPAIGN: " + campaign +"</b>");
+        Character remove = null;
+        foreach(Character c in characters)
+        {
+            try
+            {
+                if (GUILayout.Button(c.Name))
+                {
+                    character = c;
+                }
+            }
+            catch (Exception)
+            {
+                remove = c;
+            }
+        }
+        if (remove != null)
+        {
+            characters.Remove(remove);
+        }
+        if (Global.Instance.DungeonMaster)
+        {
+            GUILayout.Label("<b>CAMPAIGN: " + campaign + "</b>");
+#if !UNITY_WEBPLAYER
+            if (GUILayout.Button("SAVE CAMPAIGN LOCAL"))
+            {
+                List<string> names = new List<string>();
+                foreach (Character c in characters)
+                {
+                    names.Add(c.Name);
+                }
+                Campaign obj = new Campaign(campaign, names);
+                XmlHandler.Instance.Save("Campaigns//" + campaign + ".xml", typeof(Campaign), obj);
+            }
+#endif
+            if (GUILayout.Button("SAVE CAMPAIGN CLOUD"))
+            {
+                List<string> names = new List<string>();
+                foreach (Character c in characters)
+                {
+                    names.Add(c.Name);
+                }
+                Campaign obj = new Campaign(campaign, names);
+                SaveCampaignToCloud(obj);
+            }
+        }
         GUILayout.EndHorizontal();
         detailsScroll = GUILayout.BeginScrollView(detailsScroll);
         GUILayout.BeginHorizontal();
@@ -440,6 +522,20 @@ public class SheetGUI : MonoBehaviour {
         GUILayout.EndScrollView();
         GUILayout.EndArea();
     }
+
+    private void SaveCampaignToCloud(Campaign camp)
+    {
+        Debug.Log("Saving campaign to server");
+        XmlSerializer xmls = new XmlSerializer(typeof(Campaign));
+        StringWriter writer = new StringWriter();
+        xmls.Serialize(writer, camp);
+        writer.Close();
+        WWWForm form = new WWWForm();
+        form.AddField("name", camp.Name);
+        form.AddField("file", writer.ToString());
+        WWW www = new WWW("http://hazlett206.ddns.net/DND/SaveCampaign.php", form);
+        StartCoroutine(UploadToServer(www));
+    }
     private void SaveToServer()
     {
         Debug.Log("Saving character to server");
@@ -459,12 +555,12 @@ public class SheetGUI : MonoBehaviour {
 
         if (www.error == null)
         {
-            Debug.Log("Save successful");
+            message = ("Save successful");
             Debug.Log(www.text);
         }
         else
         {
-            Debug.Log("WWW Error: " + www.error);
+            message = ("WWW Error: " + www.error);
         }
     }
     private void DrawSkills()

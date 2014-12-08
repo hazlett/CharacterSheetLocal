@@ -99,15 +99,22 @@ public class Character {
     {
         
     }
-    public void Save()
+    public string Save()
     {
-        Debug.Log("Saving character locally");
-        XmlSerializer xmls = new XmlSerializer(typeof(Character));
-        using (FileStream stream = new FileStream("Characters//" + Name + ".xml", FileMode.Create))
+        try
         {
-            xmls.Serialize(stream, this);
+            Debug.Log("Saving character locally");
+            XmlSerializer xmls = new XmlSerializer(typeof(Character));
+            using (FileStream stream = new FileStream("Characters//" + Name + ".xml", FileMode.Create))
+            {
+                xmls.Serialize(stream, this);
+            }
+            return "Saved successfully";
         }
-        Debug.Log("Character saved");
+        catch (Exception e)
+        {
+            return e.Message;
+        }
     }
 
 }
