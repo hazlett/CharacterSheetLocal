@@ -57,6 +57,7 @@
     <Compile Include="Assets\Scripts\Character.cs" />
     <Compile Include="Assets\Scripts\CharactersCloudGUI.cs" />
     <Compile Include="Assets\Scripts\Class.cs" />
+    <Compile Include="Assets\Scripts\CloudHandler.cs" />
     <Compile Include="Assets\Scripts\DMCloudGUI.cs" />
     <Compile Include="Assets\Scripts\Feat.cs" />
     <Compile Include="Assets\Scripts\Global.cs" />

@@ -49,16 +49,20 @@ public class SheetGUI : MonoBehaviour {
             {
                 characters = new List<Character>();
                 character = new Character();
+                Debug.Log("DM Null characters");
             }
             else
             {
-                campaign = Global.Instance.CampaignName;   
+                campaign = Global.Instance.CampaignName;
+                campaign = campaign.Replace(".xml", "");
+                campaign = campaign.Replace("Campaigns\\", "");
                 if (campaign == null)
                 {
                     Debug.Log("No campaign name");
                     campaign = "";
                 }
                 character = characters[0];
+                Debug.Log("DM characters");
             }    
         }
         else if (Global.Instance.Local)
@@ -71,6 +75,10 @@ public class SheetGUI : MonoBehaviour {
                 character.Name = Global.Instance.CharacterName;
                 characters.Add(character);
             }
+            else
+            {
+                Debug.Log("Character Loaded");
+            }
         }
         else
         {
@@ -82,6 +90,7 @@ public class SheetGUI : MonoBehaviour {
                 character.Name = Global.Instance.CharacterName;
                 characters.Add(character);
             }
+            Debug.Log("Not local character");
         }
         strTemp = character.Strength;
         dexTemp = character.Dexterity;

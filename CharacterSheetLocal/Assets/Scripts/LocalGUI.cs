@@ -42,8 +42,8 @@ public class LocalGUI : MonoBehaviour {
         GUILayout.EndHorizontal();
         GUILayout.BeginArea(leftRect);
         GUILayout.BeginScrollView(leftScroll);
-        GUILayout.Label("<b>CHARACTERS. CLICK TO LOAD</b>");
-        if (GUILayout.Button("NEW CHARACTER"))
+        GUILayout.Label("<b>LOCAL CHARACTERS. CLICK TO LOAD</b>");
+        if (GUILayout.Button("<b>NEW CHARACTER</b>"))
         {
             Global.Instance.DungeonMaster = false;
             Global.Instance.Local = true;
@@ -62,11 +62,11 @@ public class LocalGUI : MonoBehaviour {
         GUILayout.EndArea();
         GUILayout.BeginArea(rightRect);
         GUILayout.BeginScrollView(rightScroll);
-        GUILayout.Label("<b>CAMPAIGNS. CLICK TO LOAD</b>");
+        GUILayout.Label("<b>LOCAL CAMPAIGNS. CLICK TO LOAD</b>");
         GUILayout.Space(5.0f);
         foreach (string name in campaignFiles)
         {
-            if (GUILayout.Button(name))
+            if (GUILayout.Button(name.Replace("Campaigns\\", "")))
             {
                 LoadCampaign(name);
             }
@@ -120,7 +120,10 @@ public class LocalGUI : MonoBehaviour {
         foreach (string file in campaign.CharacterNames)
         {
             Character c = (Character)XmlHandler.Instance.Load("Characters//" + file + ".xml", typeof(Character));
-            campaignCharacters.Add(c);
+            if (c != null)
+            {
+                campaignCharacters.Add(c);
+            }
         }
 
         Global.Instance.CampaignCharacters = campaignCharacters;

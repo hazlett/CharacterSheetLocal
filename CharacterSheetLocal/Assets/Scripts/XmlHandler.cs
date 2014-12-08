@@ -33,7 +33,7 @@ public class XmlHandler {
         }
         else
         {
-            Debug.Log("File does not exist");
+            Debug.Log("File does not exist: " + fileName);
         }
 
         return obj;

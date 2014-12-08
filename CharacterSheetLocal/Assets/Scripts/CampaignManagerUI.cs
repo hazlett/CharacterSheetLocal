@@ -7,14 +7,14 @@ public class CampaignManagerUI : MonoBehaviour {
     private string campaignName = "";
     private List<Character> characters = new List<Character>();
     private List<Character> allCharacters = new List<Character>();
-<<<<<<< HEAD
+
     private Vector2 leftScroll = new Vector2();
     private Rect leftRect = new Rect(0, 0, Screen.width * 0.5f, Screen.height);
     private Vector2 rightScroll = new Vector2();
     private Rect rightRect = new Rect(Screen.width * 0.5f, 0, Screen.width * 0.5f, Screen.height);
-=======
+
     private Campaign campaign;
->>>>>>> origin/master
+
 	void Start () {
 	    string[] files = Directory.GetFiles("Characters");
         campaign = new Campaign();
@@ -42,22 +42,17 @@ public class CampaignManagerUI : MonoBehaviour {
             Application.LoadLevel("Loading");
         }
         GUILayout.EndHorizontal();
-<<<<<<< HEAD
-        GUILayout.Label("CAMPAIGN:"); campaign = GUILayout.TextField(campaign);
+
+        GUILayout.Label("<b>CAMPAIGN: " + campaignName + "</b>");
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("CAMPAIGN NAME:"); campaignName = GUILayout.TextField(campaignName);
+        GUILayout.EndHorizontal();
 #if !UNITY_WEBPLAYER
-        if (GUILayout.Button("SAVE CAMPAIGN LOCAL"))
-=======
-        GUILayout.Label("CAMPAIGN:"); campaignName = GUILayout.TextField(campaignName);
-        if (GUILayout.Button("SAVE CAMPAIGN"))
->>>>>>> origin/master
+
+        if (GUILayout.Button("SAVE CAMPAIGN LOCALLY"))
         {
-            campaign.Name = campaignName;
-            campaign.CharacterNames = new List<string>();
-            foreach(Character c in characters)
-            {
-                campaign.CharacterNames.Add(c.Name);
-            }
-            XmlHandler.Instance.Save("Campaigns//" + campaignName + ".xml", typeof(Campaign), campaign);
+            SaveCampaignLocally();
         }
 #endif
         if (GUILayout.Button("SAVE CAMPAIGN CLOUD"))
@@ -97,14 +92,34 @@ public class CampaignManagerUI : MonoBehaviour {
 
         GUILayout.BeginArea(rightRect);
         rightScroll = GUILayout.BeginScrollView(rightScroll);
-        
+        GUILayout.Label("ALL CLOUD CHARACTERS. CLICK TO ADD TO CAMPAIGN");
+
         GUILayout.EndScrollView();
         GUILayout.EndArea();
 
     }
 
+    private void SaveCampaignLocally()
+    {
+        campaign.Name = campaignName;
+        campaign.CharacterNames = new List<string>();
+        foreach (Character c in characters)
+        {
+            campaign.CharacterNames.Add(c.Name);
+        }
+        XmlHandler.Instance.Save("Campaigns//" + campaignName + ".xml", typeof(Campaign), campaign);
+    }
+
     private void SaveCampaignToServer()
     {
         throw new System.NotImplementedException();
+    }
+
+    private void AddFromCloudToCampaign()
+    {
+#if !UNITY_WEBPLAYER
+        
+
+#endif
     }
 }

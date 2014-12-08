@@ -25,7 +25,7 @@ public class ManagerGUI : MonoBehaviour {
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("MENU"))
         {
-            Application.LoadLevel("Menu");
+            Application.LoadLevel("Loading");
         }
         GUILayout.EndHorizontal();
         DrawSkills();
