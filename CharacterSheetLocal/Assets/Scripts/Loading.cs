@@ -1,8 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Loading : MonoBehaviour {
 
+    void Start()
+    {
+
+    }
+    void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            List<string> list = DataManager.Instance.Campaigns;
+
+            Debug.Log("CAMPAIGNS");
+            foreach (string name in list)
+            {
+                Debug.Log(name);
+            }
+            Debug.Log("END OF CAMPAIGNS");
+        }
+    }
     void OnGUI()
     {
 #if !UNITY_WEBPLAYER

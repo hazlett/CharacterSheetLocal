@@ -5,7 +5,6 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.IO;
 public class DMCloudGUI : MonoBehaviour {
-    private List<string> campaignNames, characterNames;
     private List<Character> characters = new List<Character>();
     private string message = "";
     private int loading = 0;
@@ -15,12 +14,14 @@ public class DMCloudGUI : MonoBehaviour {
     private Rect rightRect = new Rect(Screen.width * 0.55f, 0, Screen.width * 0.45f, Screen.height);
 	void Start () {
         Refresh();
+
 	}
 	void Update() {
         if ((autoStart) && (load) && (loading == 0))
         {
             StartCampaign();
         }
+
     }
     void OnGUI()
     {
@@ -47,7 +48,7 @@ public class DMCloudGUI : MonoBehaviour {
         GUILayout.Space(10.0f);
         GUILayout.Label("<b>CLICK A NAME TO LOAD THAT CAMPAIGN</b>");
         GUILayout.BeginHorizontal();
-        foreach (string name in campaignNames)
+        foreach (string name in DataManager.Instance.Campaigns)
         {
             if (GUILayout.Button(name))
             {
@@ -83,7 +84,7 @@ public class DMCloudGUI : MonoBehaviour {
             SaveCampaign();
         }
         GUILayout.BeginArea(rightRect);
-        foreach (string name in characterNames)
+        foreach (string name in DataManager.Instance.Characters)
         {
             if (GUILayout.Button(name))
             {
@@ -151,10 +152,7 @@ public class DMCloudGUI : MonoBehaviour {
     }
     private void Refresh()
     {
-        campaignNames = new List<string>();
-        StartCoroutine(RefreshCampaignsList(new WWW("http://hazlett206.ddns.net/DND/GetCampaigns.php")));
-        characterNames = new List<string>();
-        StartCoroutine(RefreshCharactersList(new WWW("http://hazlett206.ddns.net/DND/GetCharacters.php")));
+        DataManager.Instance.Refresh();
     }
 
     private void LoadCharacter(string file)
@@ -166,40 +164,11 @@ public class DMCloudGUI : MonoBehaviour {
 
         StartCoroutine(WaitForCharacter(www));
     }
-    IEnumerator RefreshCharactersList(WWW www)
-    {
-        yield return www;
-
-        // check for errors
-        if (www.error == null)
-        {
-            Debug.Log("WWW Ok!: " + www.text);
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(www.text);
-
-
-            XmlSerializer serializer = new XmlSerializer(typeof(List<string>));
-            XmlReader reader = new XmlNodeReader(doc);
-
-            characterNames = serializer.Deserialize(reader) as List<string>;
-            if (characterNames == null)
-            {
-                Debug.Log("NULL NAMES");
-                characterNames = new List<string>();
-            }
-            Debug.Log(characterNames.Count);
-            Debug.Log("Character names loaded");
-        }
-        else
-        {
-            Debug.Log("WWW Error: " + www.error);
-        }
-    }
+  
     IEnumerator WaitForCharacter(WWW www)
     {
         yield return www;
 
-        // check for errors
         if (www.error == null)
         {
             Debug.Log("WWW Ok!: " + www.text);
@@ -229,7 +198,6 @@ public class DMCloudGUI : MonoBehaviour {
         loading = 0;
         yield return www;
 
-        // check for errors
         if (www.error == null)
         {
             Debug.Log("WWW Ok!: " + www.text);
@@ -292,34 +260,6 @@ public class DMCloudGUI : MonoBehaviour {
         }
         loading--;
     }
-    IEnumerator RefreshCampaignsList(WWW www)
-    {
-        yield return www;
 
-        // check for errors
-        if (www.error == null)
-        {
-            Debug.Log("WWW Ok!: " + www.text);
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(www.text);
-
-
-            XmlSerializer serializer = new XmlSerializer(typeof(List<string>));
-            XmlReader reader = new XmlNodeReader(doc);
-
-            campaignNames = serializer.Deserialize(reader) as List<string>;
-            if (campaignNames == null)
-            {
-                Debug.Log("NULL NAMES");
-                campaignNames = new List<string>();
-            }
-            Debug.Log(campaignNames.Count);
-            Debug.Log("Campaign names loaded");
-        }
-        else
-        {
-            Debug.Log("WWW Error: " + www.error);
-        }
-    }  
 
 }

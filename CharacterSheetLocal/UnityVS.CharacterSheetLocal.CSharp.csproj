@@ -51,14 +51,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Advance.cs" />
     <Compile Include="Assets\Scripts\Armor.cs" />
     <Compile Include="Assets\Scripts\Campaign.cs" />
     <Compile Include="Assets\Scripts\CampaignManagerUI.cs" />
     <Compile Include="Assets\Scripts\Character.cs" />
     <Compile Include="Assets\Scripts\CharactersCloudGUI.cs" />
     <Compile Include="Assets\Scripts\Class.cs" />
-    <Compile Include="Assets\Scripts\CloudHandler.cs" />
     <Compile Include="Assets\Scripts\DMCloudGUI.cs" />
+    <Compile Include="Assets\Scripts\DataManager.cs" />
     <Compile Include="Assets\Scripts\Feat.cs" />
     <Compile Include="Assets\Scripts\Global.cs" />
     <Compile Include="Assets\Scripts\Item.cs" />

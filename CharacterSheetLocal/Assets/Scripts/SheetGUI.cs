@@ -483,6 +483,10 @@ public class SheetGUI : MonoBehaviour {
         if (Global.Instance.DungeonMaster)
         {
             GUILayout.Label("<b>CAMPAIGN: " + campaign + "</b>");
+            if (GUILayout.Button("REFRESH"))
+            {
+                
+            }
 #if !UNITY_WEBPLAYER
             if (GUILayout.Button("SAVE CAMPAIGN LOCAL"))
             {
