@@ -11,7 +11,7 @@ public class DMCloudGUI : MonoBehaviour {
     private int loading = 0;
     private bool load = false;
     private bool autoStart = false;
-    private string newCampaign = "New Campaign", campaign = "";
+    private string campaign = "";
     private Rect rightRect = new Rect(Screen.width * 0.55f, 0, Screen.width * 0.45f, Screen.height);
 	void Start () {
         Refresh();
@@ -40,15 +40,10 @@ public class DMCloudGUI : MonoBehaviour {
         autoStart = GUILayout.Toggle(autoStart, "AUTO START");
         GUILayout.EndHorizontal();
         GUILayout.Space(10.0f);
-        GUILayout.BeginHorizontal();
-        newCampaign = GUILayout.TextField(newCampaign);  
         if (GUILayout.Button("CREATE NEW CAMPAIGN"))
         {
-            campaign = newCampaign;
-            autoStart = false;
-            characters = new List<Character>();
+            Application.LoadLevel("CampaignManager");
         }
-        GUILayout.EndHorizontal();
         GUILayout.Space(10.0f);
         GUILayout.Label("<b>CLICK A NAME TO LOAD THAT CAMPAIGN</b>");
         GUILayout.BeginHorizontal();
