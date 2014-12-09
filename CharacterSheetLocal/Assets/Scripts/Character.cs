@@ -99,13 +99,38 @@ public class Character {
     {
         
     }
+    public string TotalLevel()
+    {
+        int level = 0;
+        foreach (Class c in Classes)
+        {
+            level += int.Parse(c.Level);
+        }
+        return level.ToString();
+    }
+    public string ClassesToString()
+    {
+        string value = "LEVEL: ", classes = "";
+        int level = 0;
+        for (int i = 0; i < Classes.Count; i++)
+        {
+            classes += Classes[i].Name;
+            if (i != Classes.Count - 1)
+            {
+                classes += " | ";
+            }
+            level += int.Parse(Classes[i].Level);
+        }
+        value += level.ToString() + "\n" + classes;
+        return value;
+    }
     public string Save()
     {
         try
         {
             Debug.Log("Saving character locally");
             XmlSerializer xmls = new XmlSerializer(typeof(Character));
-            using (FileStream stream = new FileStream("Characters//" + Name + ".xml", FileMode.Create))
+            using (FileStream stream = new FileStream(DataManager.Instance.characterDirectory + Name + ".xml", FileMode.Create))
             {
                 xmls.Serialize(stream, this);
             }

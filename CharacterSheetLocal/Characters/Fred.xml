@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<Character xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="Fred" Owner="owner" Race="race" Gender="gender" Age="age" Alignment="true neutral" Eye="eye" Hair="hair" Scars="" Height="height" Weight="weight" Speed="speed" Experience="0" Money="0" Strength="14" Dexterity="0" Constitution="12" Intelligence="0" Wisdom="0" Charisma="0" CurrentHP="0" MaxHP="0" AC="10" ACMiscBonus="0" ShieldBonus="0" DR="0" InitiativeBonus="0" BaseFortitude="0" BaseReflex="0" BaseWill="0" BonusFortitude="0" BonusReflex="0" BonusWill="0" GrappleBonus="0">
+  <Feats Name="feat" Description="feat" />
+  <Classes Name="Warrior" Level="8" Prestige="false" />
+  <Classes Name="Gun slinger" Level="2" Prestige="true" />
+  <Weapons Name="weapon" Damage="0" HitBonus="0" Description="weapon" Ranged="false" />
+  <EquippedArmor Name="armor" ACBonus="0" MaxDex="0" ArmorCheckPenalty="0" DR="0" Description="armor" />
+  <Notes>Some notes here</Notes>
+</Character>

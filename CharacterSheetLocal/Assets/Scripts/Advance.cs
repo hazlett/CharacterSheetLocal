@@ -2,9 +2,16 @@
 using System.Collections;
 
 public class Advance : MonoBehaviour {
-
+    public bool Selection;
 	void Start () {
-        Application.LoadLevel("Loading");
+        if (Selection)
+        {
+            Application.LoadLevel("SelectionMenu");
+        }
+        else
+        {
+            Application.LoadLevel("Loading");
+        }
 	}
 
 }

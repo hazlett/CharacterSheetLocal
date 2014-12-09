@@ -63,21 +63,6 @@ public class SheetGUI : MonoBehaviour {
                 }
                 character = characters[0];
                 Debug.Log("DM characters");
-            }    
-        }
-        else if (Global.Instance.Local)
-        {
-            character = (Character)XmlHandler.Instance.Load("Characters//" + Global.Instance.CharacterName + ".xml", typeof(Character));
-            if (character == null)
-            {
-                character = new Character();
-                Debug.Log("No character to load");
-                character.Name = Global.Instance.CharacterName;
-                characters.Add(character);
-            }
-            else
-            {
-                Debug.Log("Character Loaded");
             }
         }
         else
@@ -87,10 +72,8 @@ public class SheetGUI : MonoBehaviour {
             {
                 character = new Character();
                 Debug.Log("No character");
-                character.Name = Global.Instance.CharacterName;
-                characters.Add(character);
+                character.Name = "Default_Name";
             }
-            Debug.Log("Not local character");
         }
         strTemp = character.Strength;
         dexTemp = character.Dexterity;
@@ -440,7 +423,7 @@ public class SheetGUI : MonoBehaviour {
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("MENU"))
         {
-            Application.LoadLevel("Loading");
+            Application.LoadLevel("SelectionMenu");
         } 
 #if !UNITY_WEBPLAYER
         if (GUILayout.Button("SAVE CHARACTER LOCAL"))
@@ -516,12 +499,31 @@ public class SheetGUI : MonoBehaviour {
         GUILayout.Label("Name:"); character.Name = GUILayout.TextField(character.Name);
         GUILayout.Label("Owner:"); character.Owner = GUILayout.TextField(character.Owner);
         GUILayout.Label("Race:"); character.Race = GUILayout.TextField(character.Race);
-        GUILayout.EndHorizontal();
-        GUILayout.BeginHorizontal();
         GUILayout.Label("Gender:"); character.Gender = GUILayout.TextField(character.Gender);
         GUILayout.Label("Age:"); character.Age = GUILayout.TextField(character.Age);
         GUILayout.Label("Eye:"); character.Eye = GUILayout.TextField(character.Eye);
         GUILayout.Label("Hair:"); character.Hair = GUILayout.TextField(character.Hair);
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        Class rm = null;
+        foreach (Class cl in character.Classes)
+        {
+            GUILayout.Label("Class:"); cl.Name = GUILayout.TextField(cl.Name);
+            GUILayout.Label("Level:"); cl.Level = GUILayout.TextField(cl.Level);
+            cl.Prestige = GUILayout.Toggle(cl.Prestige, "PRESTIGE");
+            if (cl.Name == "" && cl.Level == "")
+            {
+                rm = cl;
+            }
+        }
+        if (rm != null)
+        {
+            character.Classes.Remove(rm);
+        }
+        if (GUILayout.Button("ADD CLASS"))
+        {
+            character.Classes.Add(new Class());
+        }
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         GUILayout.Label("Scars/Tats:"); character.Scars = GUILayout.TextField(character.Scars);
@@ -559,6 +561,7 @@ public class SheetGUI : MonoBehaviour {
         WWWForm form = new WWWForm();
         form.AddField("name", character.Name);
         form.AddField("file", writer.ToString());
+        form.AddField("overwrite", "true");
         WWW www = new WWW("http://hazlett206.ddns.net/DND/SaveCharacter.php", form);
         StartCoroutine(UploadToServer(www));
     }
@@ -614,14 +617,5 @@ public class SheetGUI : MonoBehaviour {
         }
         GUILayout.EndScrollView();
         GUILayout.EndArea();
-    }
-
-    private void Save()
-    {
-        totalLevel = "0";
-        foreach(Class c in character.Classes)
-        {
-            totalLevel += c.Level;
-        }
     }
 }

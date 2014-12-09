@@ -9,7 +9,8 @@ using System.IO;
 public class DataManager : MonoBehaviour {
     private static DataManager instance;
     public static DataManager Instance { get { return instance; } }
-
+    private int loading = 0, syncing = 0;
+    private bool charactersListLoaded = false, loaded = false;
     private List<string> characters, campaigns, feats, skills, items, spells, weapons, armors, 
         localCharacters, localCampaigns, localFeats, localSkills, localItems, localSpells, localWeapons, localArmors;
 
@@ -21,14 +22,18 @@ public class DataManager : MonoBehaviour {
         getCharactersURL = "http://hazlett206.ddns.net/DND/GetCharacters.php", getCampaignsURL = "http://hazlett206.ddns.net/DND/GetCampaigns.php",
         getFeatsURL = "http://hazlett206.ddns.net/DND/LoadFeats.php", getSkillsURL = "http://hazlett206.ddns.net/DND/LoadSkills.php";
     //Local directories  ///TODO: items, spells, weapons, armor
-    private string characterDirectory = @"Characters/", campaignDirectory = @"Campaigns/",
+
+    internal string characterDirectory = @"Characters/", campaignDirectory = @"Campaigns/",
         featDirectory = @"Feats/", skillDirectory = @"Skills/",
         itemDirectory = @"Items/", spellDirectory = @"Spells/",
         weaponDirectory = @"Weapons/", armorDirectory = @"Armors/";
 
-    private List<Character> campaignCharacters;
-    public List<Character> CampaignCharacters { get { return campaignCharacters; } }
-
+    private List<Character> campaignCharacters, allCharacters, allCloudCharacters, allLocalCharacters;
+    internal List<Character> CampaignCharacters { get { return campaignCharacters; } }
+    internal List<Character> AllCharacters { get { return allCharacters; } }
+    internal List<Character> AllCloudCharacters { get { return allCloudCharacters; } }
+    internal List<Character> AllLocalCharacters { get { return allLocalCharacters; } }
+    public bool Loading { get { return !((loading == 0) && (loaded)); } }
     internal string CharacterURL { get { return getCharacterURL; } }
     internal string CampaignURL { get { return getCampaignURL; } }
     internal string FeatURL { get { return getFeatURL; } }
@@ -53,17 +58,96 @@ public class DataManager : MonoBehaviour {
         {
             Destroy(this);
         }
+#if UNITY_ANDROID
+        characterDirectory = Application.persistentDataPath + "/Characters/"; campaignDirectory = Application.persistentDataPath + "/Campaigns/";
+        featDirectory = Application.persistentDataPath + "/Feats/"; skillDirectory = Application.persistentDataPath + "/Skills/";
+        itemDirectory = Application.persistentDataPath + "/Items/"; spellDirectory = Application.persistentDataPath + "/Spells/";
+        weaponDirectory = Application.persistentDataPath + "/Weapons/"; armorDirectory = Application.persistentDataPath + "/Armors/";
+#endif
         Refresh();
     }
-    internal void LoadCampaignCharacters(List<string> campaignCharacters, bool serverFirst = true)
+    void Update()
     {
-        foreach (string name in campaignCharacters)
+        if (charactersListLoaded)
         {
-            StartCoroutine()
+            LoadAllCharacters();
+        }
+    }
+
+    internal void LoadAllCharacters()
+    {
+        charactersListLoaded = false;
+        loaded = false;
+        foreach (string name in characters)
+        {
+            StartCoroutine(AddCharacterToAll(name));
+        }
+#if !UNITY_WEBPLAYER
+        foreach (string name in localCharacters)
+        {
+            Character c = LoadCharacter(name);
+
+            if (c != null)
+            {
+                if (!allCharacters.Contains(c))
+                {
+                    allCharacters.Add(c);
+                }
+                allLocalCharacters.Add(c);
+            }
+        }
+#endif
+    }
+    private IEnumerator AddCharacterToAll(string name)
+    {
+        loading++;
+        WWWForm form = new WWWForm();
+        form.AddField("fileName", name);
+        WWW www = new WWW(getCharacterURL, form);
+        yield return www;
+        if (www.error == null)
+        {
+            Character c = DeserializeToCharacter(www.text);
+            if (c != null)
+            {
+                allCloudCharacters.Add(c);
+                allCharacters.Add(c);               
+            }
+        }
+        else
+        {
+#if !UNITY_WEBPLAYER
+            AddLocalCharacterToCampaign(name);
+#endif
+        }
+        loading--;
+        loaded = true;
+    }
+    internal Character DeserializeToCharacter(string text)
+    {
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(text);
+
+        Character obj = new Character();
+        XmlSerializer serializer = new XmlSerializer(typeof(Character));
+        XmlReader reader = new XmlNodeReader(doc);
+
+        obj = serializer.Deserialize(reader) as Character;
+
+        return obj;
+    }
+    private void AddLocalCharacterToCampaign(string name)
+    {
+        Character c = LoadCharacter(name);
+        if (c != null)
+        {
+            CampaignCharacters.Add(c);
         }
     }
     public void Refresh()
     {
+        var connectionTestResult = Network.TestConnection();
+        Debug.Log(connectionTestResult.ToString());
         characters = new List<string>();
         campaigns = new List<string>();
         feats = new List<string>();
@@ -72,9 +156,12 @@ public class DataManager : MonoBehaviour {
         localCampaigns = new List<string>();
         localFeats = new List<string>();
         localSkills = new List<string>();
+        allLocalCharacters = new List<Character>();
 
 #if !UNITY_WEBPLAYER
         localCharacters = GetList(characterDirectory);
+        localCharacters.Sort();
+#if !UNITY_ANDROID
         localCampaigns = GetList(campaignDirectory);
         localFeats = GetList(featDirectory);
         localSkills = GetList(skillDirectory);
@@ -82,6 +169,8 @@ public class DataManager : MonoBehaviour {
         localSpells = GetList(spellDirectory);
         localWeapons = GetList(weaponDirectory);
         localArmors = GetList(armorDirectory);
+#endif
+ 
 #endif
 
         StartCoroutine(RefreshCharacters());
@@ -96,12 +185,21 @@ public class DataManager : MonoBehaviour {
 
     private IEnumerator RefreshCharacters()
     {
+        allCharacters = new List<Character>();
+        allCloudCharacters = new List<Character>();
+        charactersListLoaded = false;
         WWW www = new WWW(getCharactersURL);
         yield return www;
         if (www.error == null)
         {
             characters = (List<string>)DeserializeList(www.text);
+            if (characters == null)
+            {
+                characters = new List<string>();
+            }
         }
+        characters.Sort();
+        charactersListLoaded = true;
     }
     private IEnumerator RefreshCampaigns()
     {
@@ -167,31 +265,74 @@ public class DataManager : MonoBehaviour {
     //    }
     //}
     /// <summary>
-    /// Syncs the local directories with the server. 
+    /// Syncs the server to local. 
     /// If overwrite=true the server files will overwrite local versions with the same name
     /// </summary>
     /// <param name="overwrite"></param>
     internal void SyncWithServer(bool overwrite = false)
     {
-
+#if !UNITY_WEBPLAYER
+        allLocalCharacters = new List<Character>();
+        foreach (Character c in allCloudCharacters)
+        {
+            if (!localCharacters.Contains(c.Name) || overwrite)
+            {
+                c.Save();
+            }
+        }
+        Refresh();
+#endif
     }
     /// <summary>
-    /// Syncs the server to the local files you have.
+    /// Syncs the local to the server.
     /// If overwrite=true the local files will overwrite the server versions with the same name
     /// ONLY ADMIN SHOULD BE ABLE TO OVERWRITE THE SERVER
     /// </summary>
     /// <param name="overwrite"></param>
     internal void SyncToServer(bool overwrite = false)
     {
-
+#if !UNITY_WEBPLAYER
+        string overwriteString = "false";
+        syncing = 0;
+        if (overwrite)
+        {
+            overwriteString = "true";
+        }
+        foreach (Character c in allLocalCharacters)
+        {
+            StartCoroutine(SendCharacter(c, overwriteString));
+        }
+#endif
     }
 
     //Server methods
-    internal void SendCharacter(Character character)
+    internal IEnumerator SendCharacter(Character character, string overwrite)
     {
-        
+        syncing++;
+        XmlSerializer xmls = new XmlSerializer(typeof(Character));
+        StringWriter writer = new StringWriter();
+        xmls.Serialize(writer, character);
+        writer.Close();
+        WWWForm form = new WWWForm();
+        form.AddField("name", character.Name);
+        form.AddField("file", writer.ToString());
+        form.AddField("overwrite", overwrite);
+        WWW www = new WWW(sendCharacterURL, form);
+        yield return www;
+        if (www.error == null)
+        {
+            Debug.Log("Send Successful");
+        }
+        else
+        {
+            Debug.Log("Send ERROR: " + www.error);
+        }
+        syncing--;
+        if (syncing == 0)
+        {
+            Refresh();
+        }
     }
-
     internal void SendCampaign(Campaign campaign)
     {
 
@@ -211,11 +352,11 @@ public class DataManager : MonoBehaviour {
     //Local methods
     internal Character LoadCharacter(string name)
     {
-        return null;
+        return XmlHandler.Instance.Load(characterDirectory + name + ".xml", typeof(Character)) as Character;
     }
     internal void SaveCharacter(Character character)
     {
-
+        character.Save();
     }
     internal Campaign LoadCampaign(string name)
     {
@@ -248,6 +389,10 @@ public class DataManager : MonoBehaviour {
 #if !UNITY_WEBPLAYER
         try
         {
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);                
+            }
             string[] files = Directory.GetFiles(directory);
             foreach (string file in files)
             {
