@@ -12,6 +12,12 @@ public class Campaign {
     [XmlElement]
     public List<string> CharacterNames;
 
+    [XmlIgnore]
+    public List<Character> Characters;
+
+    [XmlIgnore]
+    private bool loaded = false;
+    public bool Loaded { get { return loaded; } } 
 
     public Campaign()
     {
@@ -23,4 +29,5 @@ public class Campaign {
         this.Name = campaign;
         this.CharacterNames = campaignCharacterNames;
     }
+
 }

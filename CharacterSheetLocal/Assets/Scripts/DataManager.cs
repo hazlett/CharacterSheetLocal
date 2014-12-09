@@ -26,6 +26,9 @@ public class DataManager : MonoBehaviour {
         itemDirectory = @"Items/", spellDirectory = @"Spells/",
         weaponDirectory = @"Weapons/", armorDirectory = @"Armors/";
 
+    private List<Character> campaignCharacters;
+    public List<Character> CampaignCharacters { get { return campaignCharacters; } }
+
     internal string CharacterURL { get { return getCharacterURL; } }
     internal string CampaignURL { get { return getCampaignURL; } }
     internal string FeatURL { get { return getFeatURL; } }
@@ -52,7 +55,13 @@ public class DataManager : MonoBehaviour {
         }
         Refresh();
     }
-
+    internal void LoadCampaignCharacters(List<string> campaignCharacters, bool serverFirst = true)
+    {
+        foreach (string name in campaignCharacters)
+        {
+            StartCoroutine()
+        }
+    }
     public void Refresh()
     {
         characters = new List<string>();
@@ -266,4 +275,5 @@ public class DataManager : MonoBehaviour {
         }
         return list;
     }
+
 }
