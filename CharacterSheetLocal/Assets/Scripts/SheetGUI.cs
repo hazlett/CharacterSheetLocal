@@ -61,7 +61,8 @@ public class SheetGUI : MonoBehaviour {
                     Debug.Log("No campaign name");
                     campaign = "";
                 }
-                character = characters[0];
+                if (characters.Count > 0)
+                    character = characters[0];
                 Debug.Log("DM characters");
             }
         }

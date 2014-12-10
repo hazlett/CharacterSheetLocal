@@ -16,6 +16,7 @@ public class CampaignManagerUI : MonoBehaviour {
     private Campaign campaign;
 
 	void Start () {
+        Global.Instance.DungeonMaster = true;
 	    string[] files = Directory.GetFiles("Characters");
         campaign = new Campaign();
         foreach (string file in files)

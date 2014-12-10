@@ -7,17 +7,13 @@ using System.Collections.Generic;
 public class Campaign {
 
     [XmlAttribute]
-    public string Name;
+    public string Name = "default";
 
     [XmlElement]
-    public List<string> CharacterNames;
+    public List<string> CharacterNames = new List<string>();
 
     [XmlIgnore]
-    public List<Character> Characters;
-
-    [XmlIgnore]
-    private bool loaded = false;
-    public bool Loaded { get { return loaded; } } 
+    public List<Character> Characters = new List<Character>();
 
     public Campaign()
     {
@@ -29,5 +25,14 @@ public class Campaign {
         this.Name = campaign;
         this.CharacterNames = campaignCharacterNames;
     }
-
+    public Campaign(string campaign, List<Character> characters)
+    {
+        this.Name = campaign;
+        this.Characters = characters;
+        CharacterNames = new List<string>();
+        foreach (Character c in characters)
+        {
+            CharacterNames.Add(c.Name);
+        }
+    }
 }

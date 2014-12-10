@@ -5,15 +5,28 @@ public class SelectionMenuGUI : MonoBehaviour {
 
     private Vector2 scroll = new Vector2();
     private Rect rect = new Rect(0, 0, Screen.width, Screen.height);
-
+    public CampaignSelection selection;
+    void Start()
+    {
+        Global.Instance.DungeonMaster = false;
+    }
     void OnGUI()
     {
+        GUILayout.BeginArea(rect);
+        scroll = GUILayout.BeginScrollView(scroll);   
         if (DataManager.Instance.Loading)
         {
-            GUI.Box(new Rect(Screen.width * 0.5f - 150.0f, Screen.height * 0.5f - 100.0f, 300.0f, 100.0f), "<b>...LOADING...</b>");
+            string loading = "<b>...LOADING...</b>";
+            if (DataManager.Instance.ConnectionError)
+            {
+                loading += "\n<b>NETWORK ERROR\nNO INTERNET CONNECTION</b>";
+            }
+            else if (DataManager.Instance.ServerError)
+            {
+                loading += "\n<b>SERVER ERROR\nCANNOT CONNECT TO SERVER</b>";
+            }
+            GUILayout.Box(loading);
         }
-        GUILayout.BeginArea(rect);
-        scroll = GUILayout.BeginScrollView(scroll);
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("REFRESH"))
         {
@@ -25,11 +38,17 @@ public class SelectionMenuGUI : MonoBehaviour {
         }
         GUILayout.EndHorizontal();
      
-#if !UNITY_PHONE
+#if !UNITY_ANDROID && !UNITY_IPHONE && !UNITY_BLACKBERRY && !UNITY_WP8
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("CAMPAIGN MANAGEMENT"))
         {
             Application.LoadLevel("CampaignManager");
         }
+        if (GUILayout.Button("FEATS, SKILLS, AND ITEMS"))
+        {
+            Application.LoadLevel("Manager");
+        }
+        GUILayout.EndHorizontal();
 #endif
         GUILayout.Label("<b>CLOUD CHARACTERS</b>");
         foreach (Character c in DataManager.Instance.AllCloudCharacters)

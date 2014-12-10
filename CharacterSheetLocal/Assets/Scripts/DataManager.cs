@@ -10,7 +10,7 @@ public class DataManager : MonoBehaviour {
     private static DataManager instance;
     public static DataManager Instance { get { return instance; } }
     private int loading = 0, syncing = 0;
-    private bool charactersListLoaded = false, loaded = false;
+    private bool charactersListLoaded = false, loaded = false, campaignsListLoaded;
     private List<string> characters, campaigns, feats, skills, items, spells, weapons, armors, 
         localCharacters, localCampaigns, localFeats, localSkills, localItems, localSpells, localWeapons, localArmors;
 
@@ -21,7 +21,10 @@ public class DataManager : MonoBehaviour {
         getSkillURL = "http://hazlett206.ddns.net/DND/GetCampaigns.php", sendSkillURL,
         getCharactersURL = "http://hazlett206.ddns.net/DND/GetCharacters.php", getCampaignsURL = "http://hazlett206.ddns.net/DND/GetCampaigns.php",
         getFeatsURL = "http://hazlett206.ddns.net/DND/LoadFeats.php", getSkillsURL = "http://hazlett206.ddns.net/DND/LoadSkills.php";
+
+    private string serverURL = "http://hazlett206.ddns.net/DND";
     //Local directories  ///TODO: items, spells, weapons, armor
+    //Creating new items, spells, weapons, and armor is for PREMIUM users.
 
     internal string characterDirectory = @"Characters/", campaignDirectory = @"Campaigns/",
         featDirectory = @"Feats/", skillDirectory = @"Skills/",
@@ -29,11 +32,14 @@ public class DataManager : MonoBehaviour {
         weaponDirectory = @"Weapons/", armorDirectory = @"Armors/";
 
     private List<Character> campaignCharacters, allCharacters, allCloudCharacters, allLocalCharacters;
-    internal List<Character> CampaignCharacters { get { return campaignCharacters; } }
+    private List<Campaign> allLocalCampaigns, allCloudCampaigns;
+    internal List<Campaign> AllLocalCampaigns { get { return allLocalCampaigns; } }
+    internal List<Campaign> AllCloudCampaigns { get { return allCloudCampaigns; } }
     internal List<Character> AllCharacters { get { return allCharacters; } }
     internal List<Character> AllCloudCharacters { get { return allCloudCharacters; } }
     internal List<Character> AllLocalCharacters { get { return allLocalCharacters; } }
     public bool Loading { get { return !((loading == 0) && (loaded)); } }
+    internal bool ConnectionError = false, ServerError = false;
     internal string CharacterURL { get { return getCharacterURL; } }
     internal string CampaignURL { get { return getCampaignURL; } }
     internal string FeatURL { get { return getFeatURL; } }
@@ -72,8 +78,69 @@ public class DataManager : MonoBehaviour {
         {
             LoadAllCharacters();
         }
+        if (campaignsListLoaded)
+        {
+            LoadAllCampaigns();
+        }
+    }
+    internal void LoadAllCampaigns()
+    {
+#if UNITY_STANDALONE || UNITY_WEBPLAYER
+        campaignsListLoaded = false;
+        loaded = false;
+        foreach (string name in campaigns)
+        {
+            StartCoroutine(AddCampaignToAll(name));
+        }
+#if !UNITY_WEBPLAYER
+        foreach (string name in localCampaigns)
+        {
+            Campaign c = LoadCampaign(name);
+            if (c != null)
+            {
+                allLocalCampaigns.Add(c);
+            }
+        }
+#endif
+#endif
     }
 
+    private IEnumerator AddCampaignToAll(string name)
+    {
+        loading++;
+        WWWForm form = new WWWForm();
+        form.AddField("fileName", name);
+        WWW www = new WWW(getCampaignURL, form);
+        yield return www;
+        if (www.error == null)
+        {
+            Campaign c = DeserializeToCampaign(www.text);
+            if (c != null)
+            {
+                allCloudCampaigns.Add(c);
+            }
+        }
+        else
+        {
+            Debug.Log("ERROR: " + www.error);
+        }
+        loading--;
+        loaded = true;
+    }
+
+    private Campaign DeserializeToCampaign(string text)
+    {
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(text);
+
+        Campaign obj = new Campaign();
+        XmlSerializer serializer = new XmlSerializer(typeof(Campaign));
+        XmlReader reader = new XmlNodeReader(doc);
+
+        obj = serializer.Deserialize(reader) as Campaign;
+
+        return obj;
+    }
     internal void LoadAllCharacters()
     {
         charactersListLoaded = false;
@@ -116,9 +183,8 @@ public class DataManager : MonoBehaviour {
         }
         else
         {
-#if !UNITY_WEBPLAYER
-            AddLocalCharacterToCampaign(name);
-#endif
+            Debug.Log("ERROR: " + www.error);
+            
         }
         loading--;
         loaded = true;
@@ -136,18 +202,46 @@ public class DataManager : MonoBehaviour {
 
         return obj;
     }
-    private void AddLocalCharacterToCampaign(string name)
+
+    private void TestServerConnection()
     {
-        Character c = LoadCharacter(name);
-        if (c != null)
+#if !UNITY_WEBPLAYER
+        try
         {
-            CampaignCharacters.Add(c);
+            using (var client = new System.Net.WebClient())
+            using (var stream = client.OpenRead(serverURL))
+            {
+                Debug.Log("Server test successful");
+                ConnectionError = false;
+            }
         }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+            ConnectionError = true;
+        }
+#endif
     }
     public void Refresh()
     {
-        var connectionTestResult = Network.TestConnection();
-        Debug.Log(connectionTestResult.ToString());
+        loading = 0;
+#if !UNITY_WEBPLAYER
+        try
+        {
+            using (var client = new System.Net.WebClient())
+            using (var stream = client.OpenRead("http://www.google.com"))
+            {
+                Debug.Log("Internet test successful");
+                ConnectionError = false;
+            }       
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+            ConnectionError = true;
+        }
+#endif
+        TestServerConnection();
         characters = new List<string>();
         campaigns = new List<string>();
         feats = new List<string>();
@@ -157,6 +251,7 @@ public class DataManager : MonoBehaviour {
         localFeats = new List<string>();
         localSkills = new List<string>();
         allLocalCharacters = new List<Character>();
+        allLocalCampaigns = new List<Campaign>();
 
 #if !UNITY_WEBPLAYER
         localCharacters = GetList(characterDirectory);
@@ -203,12 +298,16 @@ public class DataManager : MonoBehaviour {
     }
     private IEnumerator RefreshCampaigns()
     {
+        allCloudCampaigns = new List<Campaign>();
+        campaignsListLoaded = false;
         WWW www = new WWW(getCampaignsURL);
         yield return www;
         if (www.error == null)
         {
             campaigns = (List<string>)DeserializeList(www.text);
         }
+        campaigns.Sort();
+        campaignsListLoaded = true;
     }
     private IEnumerator RefreshFeats()
     {
@@ -304,7 +403,21 @@ public class DataManager : MonoBehaviour {
         }
 #endif
     }
-
+    internal void SyncToServer(Campaign current, bool overwrite = false)
+    {
+#if UNITY_STANDALONE
+        string overwriteString = "false";
+        syncing = 0;
+        if (overwrite)
+        {
+            overwriteString = "true";
+        }
+        foreach (Character c in current.Characters)
+        {
+            StartCoroutine(SendCharacter(c, overwriteString));
+        }
+#endif
+    }
     //Server methods
     internal IEnumerator SendCharacter(Character character, string overwrite)
     {
